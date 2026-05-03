@@ -1,0 +1,1057 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>Office Activity Dashboard</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link rel="icon" href="image.png">
+<link rel="apple-touch-icon" href="image.png">
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet"/>
+<style>
+:root{
+  --ff:'DM Sans',sans-serif;--fm:'Space Mono',monospace;
+  --c-blue:#3B82F6;--c-orange:#F97316;--c-green:#10B981;
+  --c-purple:#A855F7;--c-cyan:#06B6D4;--c-amber:#F59E0B;
+  --r:10px;--tr:all 0.2s ease;
+}
+[data-theme="dark"]{
+  --bg:#07101F;--surface:#0C1828;--card:#101E30;--card2:#142236;
+  --input-bg:#09121E;--border:#1A2C42;--border-h:#253E58;
+  --txt:#DDE8F6;--txt2:#6E88A8;--txt3:#334D66;
+  --shadow:0 4px 24px rgba(0,0,0,.55);--shadow-lg:0 8px 40px rgba(0,0,0,.7);
+}
+[data-theme="light"]{
+  --bg:#EEF3FC;--surface:#FFFFFF;--card:#F5F8FF;--card2:#EBF0FA;
+  --input-bg:#E8EEFA;--border:#C8D8EE;--border-h:#A8BDD8;
+  --txt:#0C1828;--txt2:#3E5470;--txt3:#8AA0BC;
+  --shadow:0 4px 24px rgba(0,60,160,.07);--shadow-lg:0 8px 40px rgba(0,60,160,.1);
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html{font-size:14px;scroll-behavior:smooth}
+body{font-family:var(--ff);background:var(--bg);color:var(--txt);min-height:100vh;transition:background .25s,color .25s;overflow-x:hidden}
+button{cursor:pointer;font-family:var(--ff)}
+input,select,textarea{font-family:var(--ff);color:var(--txt);background:var(--input-bg);border:1px solid var(--border);border-radius:var(--r);outline:none;transition:var(--tr)}
+input:focus,select:focus,textarea:focus{border-color:var(--ac,var(--c-blue));box-shadow:0 0 0 3px color-mix(in srgb,var(--ac,var(--c-blue)) 14%,transparent)}
+textarea{resize:vertical}select option{background:var(--surface)}
+::-webkit-scrollbar{width:4px;height:4px}
+::-webkit-scrollbar-thumb{background:var(--border-h);border-radius:4px}
+::-webkit-scrollbar-track{background:transparent}
+
+/* BUTTONS */
+.btn{display:inline-flex;align-items:center;gap:6px;padding:8px 18px;border-radius:var(--r);border:none;font-size:13px;font-weight:600;transition:var(--tr);white-space:nowrap}
+.btn-p{background:var(--ac,var(--c-blue));color:#fff;box-shadow:0 2px 8px color-mix(in srgb,var(--ac,var(--c-blue)) 28%,transparent)}
+.btn-p:hover{filter:brightness(1.1);transform:translateY(-1px)}
+.btn-g{background:transparent;color:var(--txt2);border:1px solid var(--border)}
+.btn-g:hover{border-color:var(--ac,var(--c-blue));color:var(--ac,var(--c-blue));background:color-mix(in srgb,var(--ac,var(--c-blue)) 5%,transparent)}
+.btn-csv{background:rgba(16,185,129,.1);color:#10B981;border:1px solid rgba(16,185,129,.25)}
+.btn-csv:hover{background:rgba(16,185,129,.2)}
+.btn-d{background:rgba(239,68,68,.08);color:#F87171;border:1px solid rgba(239,68,68,.18)}
+.btn-d:hover{background:rgba(239,68,68,.16)}
+.btn-sm{padding:5px 13px;font-size:12px}
+.btn:disabled{opacity:.4;cursor:not-allowed;transform:none!important;filter:none!important}
+.ico-btn{width:30px;height:30px;border-radius:7px;background:var(--card);border:1px solid var(--border);color:var(--txt2);font-size:13px;display:flex;align-items:center;justify-content:center;transition:var(--tr);cursor:pointer}
+.ico-btn:hover{border-color:var(--ac,var(--c-blue));color:var(--ac,var(--c-blue))}
+
+/* FORM */
+.field{display:flex;flex-direction:column;gap:5px}
+.field label{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--txt3)}
+.field input,.field select,.field textarea{padding:8px 12px;font-size:13.5px;width:100%}
+.g2{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.g3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px}
+
+/* BADGES */
+.badge{display:inline-flex;align-items:center;gap:4px;padding:3px 9px;border-radius:20px;font-size:11px;font-weight:600;white-space:nowrap}
+.badge::before{content:'';width:5px;height:5px;border-radius:50%;background:currentColor;flex-shrink:0}
+.b-done{background:rgba(16,185,129,.12);color:#10B981}
+.b-prog{background:rgba(245,158,11,.12);color:#F59E0B}
+.b-pend{background:rgba(239,68,68,.12);color:#F87171}
+.b-blok{background:rgba(168,85,247,.12);color:#A855F7}
+.b-open{background:rgba(249,115,22,.12);color:#F97316}
+.b-revw{background:rgba(59,130,246,.12);color:#3B82F6}
+.b-arch{background:rgba(100,116,139,.12);color:#64748B}
+
+/* TOAST */
+#toast-wrap{position:fixed;top:18px;right:18px;z-index:9999;display:flex;flex-direction:column;gap:7px}
+.toast{padding:10px 16px;border-radius:var(--r);background:var(--card2);border:1px solid var(--border);box-shadow:var(--shadow-lg);font-size:13px;font-weight:500;max-width:310px;animation:tIn .25s ease;display:flex;align-items:center;gap:8px}
+.toast.ok{border-color:#10B981;color:#10B981}
+.toast.err{border-color:#F87171;color:#F87171}
+.toast.inf{border-color:var(--c-blue);color:var(--c-blue)}
+@keyframes tIn{from{opacity:0;transform:translateX(16px)}to{opacity:1;transform:none}}
+
+/* MODAL */
+.mbg{display:none;position:fixed;inset:0;background:rgba(0,0,0,.65);backdrop-filter:blur(6px);z-index:500;align-items:center;justify-content:center;padding:14px}
+.mbg.open{display:flex}
+.modal{background:var(--card2);border:1px solid var(--border);border-radius:16px;padding:24px;width:100%;max-width:500px;box-shadow:var(--shadow-lg);animation:mIn .25s ease;max-height:90vh;overflow-y:auto}
+.modal-hd{display:flex;align-items:center;justify-content:space-between;margin-bottom:20px}
+.modal-hd h3{font-size:16px;font-weight:700}
+.modal-hd button{background:none;border:none;color:var(--txt3);font-size:18px;cursor:pointer;padding:2px;line-height:1;transition:var(--tr)}
+.modal-hd button:hover{color:var(--txt)}
+.modal-bd{display:flex;flex-direction:column;gap:12px}
+.modal-ft{display:flex;gap:8px;justify-content:flex-end;margin-top:20px}
+@keyframes mIn{from{opacity:0;transform:translateY(-12px) scale(.98)}to{opacity:1;transform:none}}
+
+/* SPINNER */
+.spin{display:inline-block;width:14px;height:14px;border:2px solid rgba(255,255,255,.2);border-top-color:#fff;border-radius:50%;animation:rot .6s linear infinite}
+@keyframes rot{to{transform:rotate(360deg)}}
+
+/* LOGIN */
+#login{position:fixed;inset:0;z-index:9000;display:flex;align-items:center;justify-content:center;background:var(--bg);padding:20px}
+#login::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse 55% 45% at 50% 50%,rgba(59,130,246,.08) 0%,transparent 70%);pointer-events:none}
+.lcard{position:relative;width:100%;max-width:340px;background:var(--card2);border:1px solid var(--border);border-radius:20px;padding:36px 30px;text-align:center;animation:lIn .4s ease;box-shadow:var(--shadow-lg)}
+@keyframes lIn{from{opacity:0;transform:translateY(20px) scale(.96)}to{opacity:1;transform:none}}
+.llogo{width:60px;height:60px;border-radius:17px;margin:0 auto 18px;background:linear-gradient(135deg,var(--c-blue),#1D4ED8);display:flex;align-items:center;justify-content:center;font-size:27px;box-shadow:0 8px 24px rgba(59,130,246,.35)}
+.ltitle{font-size:18px;font-weight:700;margin-bottom:3px;letter-spacing:-.01em}
+.lsub{font-size:12.5px;color:var(--txt3);margin-bottom:26px}
+.pdots{display:flex;gap:12px;justify-content:center;margin-bottom:24px}
+.pdot{width:13px;height:13px;border-radius:50%;border:2px solid var(--border-h);transition:var(--tr)}
+.pdot.on{background:var(--c-blue);border-color:var(--c-blue);box-shadow:0 0 8px rgba(59,130,246,.55)}
+.ppad{display:grid;grid-template-columns:repeat(3,1fr);gap:9px}
+.pkey{padding:13px;border-radius:var(--r);background:var(--input-bg);border:1px solid var(--border);font-size:17px;font-weight:700;color:var(--txt);transition:var(--tr);font-family:var(--fm)}
+.pkey:hover{background:var(--surface);border-color:var(--c-blue)}
+.pkey:active{transform:scale(.92)}
+.pkey.go{background:var(--c-blue);color:#fff;border-color:transparent;box-shadow:0 4px 14px rgba(59,130,246,.4)}
+.pkey.go:hover{filter:brightness(1.1)}
+.perr{color:#F87171;font-size:12.5px;min-height:18px;margin-top:6px}
+
+/* APP SHELL */
+#app{display:none;min-height:100vh}
+
+/* TOPBAR */
+.topbar{position:fixed;top:0;left:0;right:0;height:56px;z-index:200;background:var(--surface);border-bottom:1px solid var(--border);display:flex;align-items:center;padding:0 18px;gap:12px}
+.brand{display:flex;align-items:center;gap:9px;font-size:14.5px;font-weight:700;white-space:nowrap;letter-spacing:-.01em}
+.brand-ico{width:32px;height:32px;border-radius:9px;background:linear-gradient(135deg,var(--c-blue),#1D4ED8);display:flex;align-items:center;justify-content:center;font-size:14px;box-shadow:0 3px 10px rgba(59,130,246,.3)}
+.top-sp{flex:1}
+.sync-pill{display:flex;align-items:center;gap:5px;padding:5px 12px;border-radius:18px;font-size:11.5px;font-weight:600;background:var(--card);border:1px solid var(--border);color:var(--txt3);cursor:pointer;transition:var(--tr)}
+.sync-pill.ing{color:var(--c-blue);border-color:var(--c-blue)}
+.sync-pill.ok{color:#10B981;border-color:#10B981}
+.sdot{width:6px;height:6px;border-radius:50%;background:currentColor}
+.sdot.pulse{animation:pd 1s infinite}
+@keyframes pd{0%,100%{opacity:1}50%{opacity:.25}}
+
+/* SIDEBAR */
+.sidebar{position:fixed;left:0;top:56px;bottom:0;width:214px;z-index:100;background:var(--surface);border-right:1px solid var(--border);display:flex;flex-direction:column;overflow-y:auto;padding:14px 0}
+.slbl{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:var(--txt3);padding:12px 18px 5px;user-select:none}
+.nav{display:flex;align-items:center;gap:10px;padding:9px 18px;margin:1px 7px;border-radius:var(--r);font-size:13px;font-weight:500;color:var(--txt2);cursor:pointer;transition:var(--tr);border:1px solid transparent}
+.nav:hover{background:var(--card);color:var(--txt)}
+.nav.on{background:color-mix(in srgb,var(--nc) 10%,transparent);color:var(--nc);border-color:color-mix(in srgb,var(--nc) 20%,transparent);font-weight:600}
+.ndot{width:7px;height:7px;border-radius:50%;flex-shrink:0;background:var(--nc,var(--txt3))}
+.nav:not(.on) .ndot{opacity:.3}
+.div-line{height:1px;background:var(--border);margin:10px 14px}
+
+/* CONTENT */
+.content{margin-left:214px;padding-top:56px;min-height:100vh}
+.panel{display:none;padding:26px 28px 52px;animation:pIn .25s ease}
+.panel.on{display:block}
+@keyframes pIn{from{opacity:0;transform:translateY(7px)}to{opacity:1;transform:none}}
+
+/* SECTION HEADER */
+.sec-hd{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:18px;gap:14px;flex-wrap:wrap}
+.sec-title{display:flex;align-items:center;gap:12px}
+.sec-ico{width:44px;height:44px;border-radius:12px;background:color-mix(in srgb,var(--ac) 14%,transparent);border:1px solid color-mix(in srgb,var(--ac) 22%,transparent);display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0}
+.sec-title h2{font-size:19px;font-weight:700;letter-spacing:-.02em}
+.sec-title p{font-size:12.5px;color:var(--txt3);margin-top:2px}
+.sec-acts{display:flex;gap:7px;flex-wrap:wrap;align-items:center}
+
+/* TRACKER BAR */
+.tracker{background:var(--card2);border:1px solid var(--border);border-radius:12px;margin-bottom:16px;overflow:hidden;box-shadow:var(--shadow);display:grid;grid-template-columns:1fr 1fr 1fr}
+.tstat-card{display:flex;flex-direction:column;align-items:center;justify-content:center;padding:18px 12px;gap:3px;border-bottom:1px solid var(--border)}
+.tstat-card:not(:last-child){border-right:1px solid var(--border)}
+.tstat-card .tv{font-family:var(--fm);font-size:28px;font-weight:700;line-height:1}
+.tstat-card .tl{font-size:10.5px;font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:var(--txt3);margin-top:2px}
+.tstat-card.total .tv{color:var(--ac,var(--c-blue))}
+.tstat-card.done .tv{color:#10B981}
+.tstat-card.rem .tv{color:#F59E0B}
+.tstat-card .tind{width:20px;height:3px;border-radius:2px;margin-top:5px;background:currentColor;opacity:.3}
+.tstat-card.total .tind{color:var(--ac,var(--c-blue))}
+.tstat-card.done .tind{color:#10B981}
+.tstat-card.rem .tind{color:#F59E0B}
+/* bottom row spans all 3 columns */
+.tracker-bottom{grid-column:1/-1;display:flex;align-items:center;gap:16px;padding:12px 18px;background:color-mix(in srgb,var(--ac,var(--c-blue)) 3%,transparent)}
+.tprog{flex:1;display:flex;flex-direction:column;gap:5px}
+.tprog-lbl{display:flex;justify-content:space-between;font-size:11.5px;color:var(--txt3);font-weight:500}
+.tprog-lbl .rem{color:var(--ac,var(--c-blue));font-weight:600}
+.pbar-wrap{height:7px;background:var(--border);border-radius:6px;overflow:hidden}
+.pbar{height:100%;border-radius:6px;background:linear-gradient(90deg,var(--ac,var(--c-blue)),color-mix(in srgb,var(--ac,var(--c-blue)) 55%,#10B981));transition:width .6s cubic-bezier(.4,0,.2,1)}
+.tgt-wrap{display:flex;align-items:center;gap:7px;flex-shrink:0}
+.tgt-wrap label{font-size:11px;color:var(--txt3);font-weight:700;white-space:nowrap;text-transform:uppercase;letter-spacing:.04em}
+.tgt-inp{width:64px;padding:5px 8px;font-size:13px;font-weight:700;border-radius:7px;text-align:center;font-family:var(--fm)}
+.tgt-save{padding:5px 12px;border-radius:7px;background:color-mix(in srgb,var(--ac,var(--c-blue)) 14%,transparent);color:var(--ac,var(--c-blue));border:1px solid color-mix(in srgb,var(--ac,var(--c-blue)) 28%,transparent);font-size:12px;font-weight:600;cursor:pointer;transition:var(--tr)}
+.tgt-save:hover{background:color-mix(in srgb,var(--ac,var(--c-blue)) 24%,transparent)}
+
+/* TABLE */
+.tcard{background:var(--card);border:1px solid var(--border);border-radius:12px;overflow:hidden;box-shadow:var(--shadow)}
+.tcard-top{height:3px;background:linear-gradient(90deg,var(--ac,var(--c-blue)),color-mix(in srgb,var(--ac,var(--c-blue)) 30%,transparent))}
+.twrap{overflow-x:auto}
+table{width:100%;border-collapse:collapse;font-size:13px;min-width:560px}
+thead tr{background:color-mix(in srgb,var(--ac,var(--c-blue)) 5%,var(--card))}
+th{padding:10px 14px;text-align:left;font-size:10.5px;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:var(--txt3);border-bottom:1px solid var(--border);white-space:nowrap}
+td{padding:10px 14px;border-bottom:1px solid var(--border);color:var(--txt);vertical-align:middle}
+tbody tr:last-child td{border-bottom:none}
+tbody tr:hover{background:color-mix(in srgb,var(--ac,var(--c-blue)) 3%,transparent)}
+.td-acts{display:flex;gap:5px;align-items:center}
+.td-cmt{max-width:175px;font-size:12px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.has-cmt td:first-child{border-left:3px solid var(--ac,var(--c-blue))}
+.t-empty{text-align:center;padding:48px 20px;color:var(--txt3)}
+.t-empty .ei{font-size:34px;margin-bottom:12px;opacity:.35}
+.t-empty p{font-size:13.5px;line-height:1.6}
+
+/* QUICK-ADD FORM */
+.qadd{background:var(--card2);border:1px solid var(--border);border-radius:12px;padding:18px 20px;margin-bottom:14px}
+.qadd-title{font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--txt3);margin-bottom:14px;display:flex;align-items:center;gap:7px}
+.qadd-title::before{content:'';width:3px;height:13px;border-radius:2px;background:var(--ac,var(--c-blue))}
+.aform{display:flex;flex-direction:column;gap:12px}
+.cmt-field{background:color-mix(in srgb,var(--ac,var(--c-blue)) 4%,var(--input-bg))!important;border:1px dashed color-mix(in srgb,var(--ac,var(--c-blue)) 28%,transparent)!important;font-style:italic}
+
+/* HOME */
+.welcome{background:linear-gradient(135deg,color-mix(in srgb,var(--c-blue) 9%,var(--card2)),var(--card2));border:1px solid var(--border);border-radius:16px;padding:26px 30px;margin-bottom:20px;position:relative;overflow:hidden}
+.welcome::after{content:'🏢';position:absolute;right:24px;top:50%;transform:translateY(-50%);font-size:62px;opacity:.06;pointer-events:none}
+.w-date{font-size:12px;color:var(--txt3);margin-bottom:5px;font-family:var(--fm)}
+.w-greet{font-size:23px;font-weight:700;margin-bottom:3px;letter-spacing:-.02em}
+.w-sub{font-size:13.5px;color:var(--txt2)}
+.stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(148px,1fr));gap:12px;margin-bottom:22px}
+.sc{background:var(--card2);border:1px solid var(--border);border-radius:12px;padding:17px 18px;position:relative;overflow:hidden;transition:var(--tr)}
+.sc:hover{border-color:color-mix(in srgb,var(--sc,var(--c-blue)) 40%,transparent);transform:translateY(-1px)}
+.sc::after{content:var(--si,'📊');position:absolute;right:10px;bottom:6px;font-size:28px;opacity:.1;pointer-events:none}
+.sv{font-family:var(--fm);font-size:28px;font-weight:700;color:var(--sc,var(--c-blue))}
+.sl{font-size:11.5px;color:var(--txt3);margin-top:4px;font-weight:500}
+
+/* SETTINGS */
+.scard{background:var(--card2);border:1px solid var(--border);border-radius:12px;padding:20px 22px;margin-bottom:14px}
+.scard-title{font-size:14px;font-weight:700;margin-bottom:16px;display:flex;align-items:center;gap:8px}
+
+/* RESPONSIVE */
+@media(max-width:768px){
+  .sidebar{width:195px;transform:translateX(-100%);transition:transform .22s ease}
+  .sidebar.open{transform:none}
+  .content{margin-left:0}
+  .panel{padding:16px 14px 40px}
+  .g2,.g3{grid-template-columns:1fr}
+  .tracker-bottom{flex-direction:column;align-items:flex-start}
+}
+@media(max-width:480px){
+  .tracker{grid-template-columns:1fr}
+  .tstat-card:not(:last-child){border-right:none;border-bottom:1px solid var(--border)}
+}
+</style>
+</head>
+<body>
+
+<!-- LOGIN -->
+<div id="login">
+  <div class="lcard">
+    <div class="llogo">🏢</div>
+    <div class="ltitle">Activity Dashboard</div>
+    <div class="lsub">Enter your PIN to continue</div>
+    <div class="pdots">
+      <div class="pdot" id="d0"></div><div class="pdot" id="d1"></div>
+      <div class="pdot" id="d2"></div><div class="pdot" id="d3"></div>
+    </div>
+    <div class="ppad">
+      <button class="pkey" onclick="pk('1')">1</button><button class="pkey" onclick="pk('2')">2</button><button class="pkey" onclick="pk('3')">3</button>
+      <button class="pkey" onclick="pk('4')">4</button><button class="pkey" onclick="pk('5')">5</button><button class="pkey" onclick="pk('6')">6</button>
+      <button class="pkey" onclick="pk('7')">7</button><button class="pkey" onclick="pk('8')">8</button><button class="pkey" onclick="pk('9')">9</button>
+      <button class="pkey" onclick="pd()">⌫</button><button class="pkey" onclick="pk('0')">0</button><button class="pkey go" onclick="ps()">✓</button>
+    </div>
+    <div class="perr" id="perr"></div>
+    <div style="margin-top:14px;font-size:11.5px;color:var(--txt3)">Default PIN: <strong>1234</strong> · Change in Settings</div>
+  </div>
+</div>
+
+<div id="toast-wrap"></div>
+
+<!-- APP -->
+<div id="app">
+
+  <!-- TOPBAR -->
+  <div class="topbar">
+    <button class="ico-btn" id="mob-btn" onclick="toggleSidebar()" style="display:none">☰</button>
+    <div class="brand"><div class="brand-ico">🏢</div>Activity Dashboard</div>
+    <div class="top-sp"></div>
+    <div class="sync-pill" id="spill" onclick="syncAll()" title="Click to sync">
+      <div class="sdot" id="sdot"></div><span id="slbl">Sync</span>
+    </div>
+    <button class="ico-btn" id="theme-btn" onclick="toggleTheme()" title="Toggle theme">🌙</button>
+    <button class="btn btn-g btn-sm" onclick="lock()">🔒 Lock</button>
+  </div>
+
+  <!-- SIDEBAR -->
+  <div class="sidebar" id="sidebar">
+    <div class="slbl">Navigation</div>
+    <div class="nav on" onclick="go('home',this)" style="--nc:var(--c-blue)"><div class="ndot"></div>Dashboard</div>
+    <div class="div-line"></div>
+    <div class="slbl">Work Tables</div>
+    <div class="nav" onclick="go('daily',this)"  style="--nc:var(--c-blue)"><div class="ndot"></div>Daily Work Logs</div>
+    <div class="nav" onclick="go('post',this)"   style="--nc:var(--c-orange)"><div class="ndot"></div>Post Sales Tickets</div>
+    <div class="nav" onclick="go('pre',this)"    style="--nc:var(--c-green)"><div class="ndot"></div>Pre Sales Activities</div>
+    <div class="nav" onclick="go('app',this)"    style="--nc:var(--c-purple)"><div class="ndot"></div>App Development</div>
+    <div class="nav" onclick="go('learn',this)"  style="--nc:var(--c-cyan)"><div class="ndot"></div>Learning Logs</div>
+    <div class="div-line"></div>
+    <div class="slbl">System</div>
+    <div class="nav" onclick="go('settings',this)" style="--nc:var(--c-amber)"><div class="ndot"></div>Settings</div>
+  </div>
+
+  <!-- CONTENT -->
+  <div class="content">
+
+    <!-- HOME -->
+    <div id="sec-home" class="panel on" style="--ac:var(--c-blue)">
+      <div class="welcome">
+        <div class="w-date" id="h-date"></div>
+        <div class="w-greet" id="h-greet">Good Morning 👋</div>
+        <div class="w-sub">Your complete work activity overview — all in one place.</div>
+      </div>
+      <div class="stats">
+        <div class="sc" style="--sc:var(--c-blue);--si:'📋'"><div class="sv" id="st-daily">—</div><div class="sl">Daily Work Entries</div></div>
+        <div class="sc" style="--sc:var(--c-orange);--si:'🎫'"><div class="sv" id="st-post">—</div><div class="sl">Post Sales Tickets</div></div>
+        <div class="sc" style="--sc:var(--c-green);--si:'🤝'"><div class="sv" id="st-pre">—</div><div class="sl">Pre Sales Activities</div></div>
+        <div class="sc" style="--sc:var(--c-purple);--si:'💻'"><div class="sv" id="st-app">—</div><div class="sl">Applications Tracked</div></div>
+        <div class="sc" style="--sc:var(--c-cyan);--si:'🎓'"><div class="sv" id="st-learn">—</div><div class="sl">Learning Topics</div></div>
+      </div>
+      <div style="display:flex;gap:10px;flex-wrap:wrap">
+        <button class="btn btn-p" onclick="go('daily',document.querySelector('[onclick*=daily]'))">+ Add Today's Work</button>
+        <button class="btn btn-g" onclick="syncAll()">🔄 Refresh All</button>
+      </div>
+    </div>
+
+    <!-- TABLE 1: DAILY WORK LOGS -->
+    <div id="sec-daily" class="panel" style="--ac:var(--c-blue)">
+      <div class="sec-hd">
+        <div class="sec-title">
+          <div class="sec-ico">📋</div>
+          <div><h2>Daily Work Logs</h2><p>Track your daily tasks and progress</p></div>
+        </div>
+        <div class="sec-acts">
+          <button class="btn btn-csv btn-sm" onclick="dlCSV('daily')">⬇ CSV</button>
+          <button class="btn btn-g btn-sm" onclick="loadDaily()">🔄 Refresh</button>
+          <button class="btn btn-p" onclick="tog('df')">+ Add Entry</button>
+        </div>
+      </div>
+      <div class="qadd" id="df" style="display:none">
+        <div class="qadd-title">New Daily Work Entry</div>
+        <div class="aform">
+          <div class="g2">
+            <div class="field"><label>Date</label><input id="nd-date" readonly style="opacity:.6"/></div>
+            <div class="field"><label>Day</label><input id="nd-day" readonly style="opacity:.6"/></div>
+          </div>
+          <div class="field"><label>Task / Work Done</label><textarea id="nd-task" rows="3" placeholder="Describe what you worked on today…"></textarea></div>
+          <div class="g2">
+            <div class="field"><label>Status</label>
+              <select id="nd-status">
+                <option value="Completed">✅ Completed</option>
+                <option value="In Progress" selected>🔄 In Progress</option>
+                <option value="Pending">⏳ Pending</option>
+                <option value="Blocked">🚫 Blocked</option>
+                <option value="Under Review">🔍 Under Review</option>
+              </select>
+            </div>
+            <div class="field"><label>💬 Comments</label><input id="nd-cmt" class="cmt-field" placeholder="Notes or highlights…"/></div>
+          </div>
+          <div style="display:flex;gap:8px;justify-content:flex-end">
+            <button class="btn btn-g btn-sm" onclick="tog('df')">Cancel</button>
+            <button class="btn btn-p btn-sm" id="nd-btn" onclick="saveDaily()">Save Entry</button>
+          </div>
+        </div>
+      </div>
+      <div class="tcard"><div class="tcard-top"></div>
+        <div class="twrap"><table>
+          <!-- FIX 1: Removed S.No (#) column from Daily Work Logs -->
+          <thead><tr><th>Date</th><th>Day</th><th>Task / Work Done</th><th>Status</th><th>💬 Comments</th><th>Actions</th></tr></thead>
+          <tbody id="tb-daily"></tbody>
+        </table></div>
+      </div>
+    </div>
+
+    <!-- TABLE 2: POST SALES TICKETS -->
+    <div id="sec-post" class="panel" style="--ac:var(--c-orange)">
+      <div class="sec-hd">
+        <div class="sec-title">
+          <div class="sec-ico">🎫</div>
+          <div><h2>Post Sales Tickets</h2><p>Track support tickets and resolution status</p></div>
+        </div>
+        <div class="sec-acts">
+          <button class="btn btn-csv btn-sm" onclick="dlCSV('post')">⬇ CSV</button>
+          <button class="btn btn-g btn-sm" onclick="loadPost()">🔄 Refresh</button>
+          <button class="btn btn-p" style="--ac:var(--c-orange)" onclick="tog('pf')">+ Add Ticket</button>
+        </div>
+      </div>
+      <!-- FIX 3: Tracker — Total=all, Completed=done statuses, Remaining=total-completed -->
+      <div class="tracker" style="--ac:var(--c-orange)">
+        <div class="tstat-card total"><div class="tv" id="tt-post-tot">0</div><div class="tl">Total</div><div class="tind"></div></div>
+        <div class="tstat-card done"><div class="tv" id="tt-post-done">0</div><div class="tl">Completed</div><div class="tind"></div></div>
+        <div class="tstat-card rem"><div class="tv" id="tt-post-rem">0</div><div class="tl">Remaining</div><div class="tind"></div></div>
+        <div class="tracker-bottom">
+          <div class="tprog">
+            <div class="tprog-lbl"><span id="tl-post-pct">0% of target</span><span class="rem" id="tl-post-rem"></span></div>
+            <div class="pbar-wrap"><div class="pbar" id="pb-post" style="width:0%"></div></div>
+          </div>
+          <div class="tgt-wrap">
+            <label>Target</label>
+            <input type="number" class="tgt-inp" id="tgt-post" min="0" placeholder="—" oninput="updTgt('POST','post')"/>
+            <button class="tgt-save" onclick="saveTgt('POST','post')">Save</button>
+          </div>
+        </div>
+      </div>
+      <div class="qadd" id="pf" style="display:none">
+        <div class="qadd-title">New Post Sales Ticket</div>
+        <div class="aform">
+          <div class="g2">
+            <div class="field"><label>Ticket Number</label><input id="np-ticket" placeholder="e.g. TKT-2024-001"/></div>
+            <div class="field"><label>Status</label>
+              <select id="np-status">
+                <option value="Open">🔓 Open</option>
+                <option value="In Progress">🔄 In Progress</option>
+                <option value="Pending">⏳ Pending Customer</option>
+                <option value="Resolved">✅ Resolved</option>
+                <option value="Closed">🔒 Closed</option>
+                <option value="Escalated">🚨 Escalated</option>
+              </select>
+            </div>
+          </div>
+          <div class="field"><label>Description</label><textarea id="np-desc" rows="3" placeholder="Describe the issue…"></textarea></div>
+          <div class="field"><label>💬 Comments</label><input id="np-cmt" class="cmt-field" placeholder="Notes or highlights…"/></div>
+          <div style="display:flex;gap:8px;justify-content:flex-end">
+            <button class="btn btn-g btn-sm" onclick="tog('pf')">Cancel</button>
+            <button class="btn btn-p btn-sm" style="--ac:var(--c-orange)" id="np-btn" onclick="savePost()">Save Ticket</button>
+          </div>
+        </div>
+      </div>
+      <div class="tcard" style="--ac:var(--c-orange)"><div class="tcard-top"></div>
+        <div class="twrap"><table>
+          <!-- FIX 1: Removed S.No (#) column -->
+          <thead><tr><th>Ticket #</th><th>Description</th><th>Status</th><th>💬 Comments</th><th>Actions</th></tr></thead>
+          <tbody id="tb-post"></tbody>
+        </table></div>
+      </div>
+    </div>
+
+    <!-- TABLE 3: PRE SALES ACTIVITIES -->
+    <div id="sec-pre" class="panel" style="--ac:var(--c-green)">
+      <div class="sec-hd">
+        <div class="sec-title">
+          <div class="sec-ico">🤝</div>
+          <div><h2>Pre Sales Activities</h2><p>Log proposals, demos, and pre-sales work</p></div>
+        </div>
+        <div class="sec-acts">
+          <button class="btn btn-csv btn-sm" onclick="dlCSV('pre')">⬇ CSV</button>
+          <button class="btn btn-g btn-sm" onclick="loadPre()">🔄 Refresh</button>
+          <button class="btn btn-p" style="--ac:var(--c-green)" onclick="tog('pref')">+ Add Activity</button>
+        </div>
+      </div>
+      <div class="tracker" style="--ac:var(--c-green)">
+        <div class="tstat-card total"><div class="tv" id="tt-pre-tot">0</div><div class="tl">Total</div><div class="tind"></div></div>
+        <div class="tstat-card done"><div class="tv" id="tt-pre-done">0</div><div class="tl">Completed</div><div class="tind"></div></div>
+        <div class="tstat-card rem"><div class="tv" id="tt-pre-rem">0</div><div class="tl">Remaining</div><div class="tind"></div></div>
+        <div class="tracker-bottom">
+          <div class="tprog">
+            <div class="tprog-lbl"><span id="tl-pre-pct">0% of target</span><span class="rem" id="tl-pre-rem"></span></div>
+            <div class="pbar-wrap"><div class="pbar" id="pb-pre" style="width:0%"></div></div>
+          </div>
+          <div class="tgt-wrap">
+            <label>Target</label>
+            <input type="number" class="tgt-inp" id="tgt-pre" min="0" placeholder="—" oninput="updTgt('PRE','pre')"/>
+            <button class="tgt-save" onclick="saveTgt('PRE','pre')">Save</button>
+          </div>
+        </div>
+      </div>
+      <div class="qadd" id="pref" style="display:none">
+        <div class="qadd-title">New Pre Sales Activity</div>
+        <div class="aform">
+          <div class="g2">
+            <div class="field"><label>Project Name</label><input id="nre-proj" placeholder="e.g. Client ABC — Phase 1"/></div>
+            <div class="field"><label>Status</label>
+              <select id="nre-status">
+                <option value="In Progress">🔄 In Progress</option>
+                <option value="Proposal Sent">📤 Proposal Sent</option>
+                <option value="Demo Scheduled">📅 Demo Scheduled</option>
+                <option value="Won">🏆 Won</option>
+                <option value="Lost">❌ Lost</option>
+                <option value="On Hold">⏸ On Hold</option>
+              </select>
+            </div>
+          </div>
+          <div class="field"><label>Work Description</label><textarea id="nre-work" rows="3" placeholder="Describe the pre-sales work…"></textarea></div>
+          <div class="field"><label>💬 Comments</label><input id="nre-cmt" class="cmt-field" placeholder="Notes or highlights…"/></div>
+          <div style="display:flex;gap:8px;justify-content:flex-end">
+            <button class="btn btn-g btn-sm" onclick="tog('pref')">Cancel</button>
+            <button class="btn btn-p btn-sm" style="--ac:var(--c-green)" onclick="savePre()">Save Activity</button>
+          </div>
+        </div>
+      </div>
+      <div class="tcard" style="--ac:var(--c-green)"><div class="tcard-top"></div>
+        <div class="twrap"><table>
+          <!-- FIX 1: Removed S.No (#) column -->
+          <thead><tr><th>Project Name</th><th>Work Description</th><th>Status</th><th>💬 Comments</th><th>Actions</th></tr></thead>
+          <tbody id="tb-pre"></tbody>
+        </table></div>
+      </div>
+    </div>
+
+    <!-- TABLE 4: APP DEVELOPMENT -->
+    <div id="sec-app" class="panel" style="--ac:var(--c-purple)">
+      <div class="sec-hd">
+        <div class="sec-title">
+          <div class="sec-ico">💻</div>
+          <div><h2>Application Development</h2><p>Catalogue of apps, purposes and repositories</p></div>
+        </div>
+        <div class="sec-acts">
+          <button class="btn btn-csv btn-sm" onclick="dlCSV('app')">⬇ CSV</button>
+          <button class="btn btn-g btn-sm" onclick="loadApp()">🔄 Refresh</button>
+          <button class="btn btn-p" style="--ac:var(--c-purple)" onclick="tog('af')">+ Add App</button>
+        </div>
+      </div>
+      <div class="tracker" style="--ac:var(--c-purple)">
+        <div class="tstat-card total"><div class="tv" id="tt-app-tot">0</div><div class="tl">Total</div><div class="tind"></div></div>
+        <div class="tstat-card done"><div class="tv" id="tt-app-done">0</div><div class="tl">Completed</div><div class="tind"></div></div>
+        <div class="tstat-card rem"><div class="tv" id="tt-app-rem">0</div><div class="tl">Remaining</div><div class="tind"></div></div>
+        <div class="tracker-bottom">
+          <div class="tprog">
+            <div class="tprog-lbl"><span id="tl-app-pct">0% of target</span><span class="rem" id="tl-app-rem"></span></div>
+            <div class="pbar-wrap"><div class="pbar" id="pb-app" style="width:0%"></div></div>
+          </div>
+          <div class="tgt-wrap">
+            <label>Target</label>
+            <input type="number" class="tgt-inp" id="tgt-app" min="0" placeholder="—" oninput="updTgt('APP','app')"/>
+            <button class="tgt-save" onclick="saveTgt('APP','app')">Save</button>
+          </div>
+        </div>
+      </div>
+      <!-- FIX 2: App Dev form now includes Status field -->
+      <div class="qadd" id="af" style="display:none">
+        <div class="qadd-title">New Application Entry</div>
+        <div class="aform">
+          <div class="g2">
+            <div class="field"><label>Application Name</label><input id="na-name" placeholder="e.g. Employee Portal"/></div>
+            <div class="field"><label>Purpose</label><input id="na-purp" placeholder="e.g. HR self-service portal"/></div>
+          </div>
+          <div class="g2">
+            <div class="field"><label>Location / Repository / URL</label><input id="na-loc" placeholder="e.g. github.com/org/repo"/></div>
+            <div class="field"><label>Status</label>
+              <select id="na-status">
+                <option value="Planning">📝 Planning</option>
+                <option value="In Progress" selected>🔄 In Progress</option>
+                <option value="Under Review">🔍 Under Review</option>
+                <option value="Testing">🧪 Testing</option>
+                <option value="Completed">✅ Completed</option>
+                <option value="On Hold">⏸ On Hold</option>
+                <option value="Archived">📦 Archived</option>
+              </select>
+            </div>
+          </div>
+          <div class="field"><label>💬 Comments</label><input id="na-cmt" class="cmt-field" placeholder="Notes or highlights…"/></div>
+          <div style="display:flex;gap:8px;justify-content:flex-end">
+            <button class="btn btn-g btn-sm" onclick="tog('af')">Cancel</button>
+            <button class="btn btn-p btn-sm" style="--ac:var(--c-purple)" onclick="saveApp()">Save App</button>
+          </div>
+        </div>
+      </div>
+      <div class="tcard" style="--ac:var(--c-purple)"><div class="tcard-top"></div>
+        <div class="twrap"><table>
+          <!-- FIX 1: Removed S.No (#) column | FIX 2: Added Status column -->
+          <thead><tr><th>Application Name</th><th>Purpose</th><th>Status</th><th>Location / Repo</th><th>💬 Comments</th><th>Actions</th></tr></thead>
+          <tbody id="tb-app"></tbody>
+        </table></div>
+      </div>
+    </div>
+
+    <!-- TABLE 5: LEARNING LOGS -->
+    <div id="sec-learn" class="panel" style="--ac:var(--c-cyan)">
+      <div class="sec-hd">
+        <div class="sec-title">
+          <div class="sec-ico">🎓</div>
+          <div><h2>Learning Logs</h2><p>Track topics and skills you are studying</p></div>
+        </div>
+        <div class="sec-acts">
+          <button class="btn btn-csv btn-sm" onclick="dlCSV('learn')">⬇ CSV</button>
+          <button class="btn btn-g btn-sm" onclick="loadLearn()">🔄 Refresh</button>
+          <button class="btn btn-p" style="--ac:var(--c-cyan)" onclick="tog('lf')">+ Add Topic</button>
+        </div>
+      </div>
+      <div class="tracker" style="--ac:var(--c-cyan)">
+        <div class="tstat-card total"><div class="tv" id="tt-learn-tot">0</div><div class="tl">Total</div><div class="tind"></div></div>
+        <div class="tstat-card done"><div class="tv" id="tt-learn-done">0</div><div class="tl">Completed</div><div class="tind"></div></div>
+        <div class="tstat-card rem"><div class="tv" id="tt-learn-rem">0</div><div class="tl">Remaining</div><div class="tind"></div></div>
+        <div class="tracker-bottom">
+          <div class="tprog">
+            <div class="tprog-lbl"><span id="tl-learn-pct">0% of target</span><span class="rem" id="tl-learn-rem"></span></div>
+            <div class="pbar-wrap"><div class="pbar" id="pb-learn" style="width:0%"></div></div>
+          </div>
+          <div class="tgt-wrap">
+            <label>Target</label>
+            <input type="number" class="tgt-inp" id="tgt-learn" min="0" placeholder="—" oninput="updTgt('LEARNING','learn')"/>
+            <button class="tgt-save" onclick="saveTgt('LEARNING','learn')">Save</button>
+          </div>
+        </div>
+      </div>
+      <div class="qadd" id="lf" style="display:none">
+        <div class="qadd-title">New Learning Entry</div>
+        <div class="aform">
+          <div class="g2">
+            <div class="field"><label>Topic / Concept</label><input id="nl-topic" placeholder="e.g. React Hooks, SQL Joins…"/></div>
+            <div class="field"><label>Status</label>
+              <select id="nl-status">
+                <option value="Not Started">⬜ Not Started</option>
+                <option value="In Progress" selected>📖 In Progress</option>
+                <option value="Completed">✅ Completed</option>
+                <option value="Revisit">🔁 Needs Revisit</option>
+              </select>
+            </div>
+          </div>
+          <div class="field"><label>💬 Comments</label><input id="nl-cmt" class="cmt-field" placeholder="Resources, links, notes…"/></div>
+          <div style="display:flex;gap:8px;justify-content:flex-end">
+            <button class="btn btn-g btn-sm" onclick="tog('lf')">Cancel</button>
+            <button class="btn btn-p btn-sm" style="--ac:var(--c-cyan)" onclick="saveLearn()">Save Topic</button>
+          </div>
+        </div>
+      </div>
+      <div class="tcard" style="--ac:var(--c-cyan)"><div class="tcard-top"></div>
+        <div class="twrap"><table>
+          <!-- FIX 1: Removed S.No (#) column -->
+          <thead><tr><th>Topic / Concept</th><th>Status</th><th>💬 Comments</th><th>Actions</th></tr></thead>
+          <tbody id="tb-learn"></tbody>
+        </table></div>
+      </div>
+    </div>
+
+    <!-- SETTINGS -->
+    <div id="sec-settings" class="panel" style="--ac:var(--c-amber)">
+      <div class="sec-hd">
+        <div class="sec-title">
+          <div class="sec-ico">⚙️</div>
+          <div><h2>Settings</h2><p>PIN, Google Sheet, and data export</p></div>
+        </div>
+      </div>
+
+      <div class="scard">
+        <div class="scard-title">🔐 Change Login PIN <span style="font-size:11px;font-weight:400;color:var(--txt3);margin-left:auto">Min. 4 digits</span></div>
+        <div class="g3" style="margin-bottom:14px">
+          <div class="field"><label>Current PIN</label><input type="password" id="pin-old" placeholder="••••" maxlength="8"/></div>
+          <div class="field"><label>New PIN</label><input type="password" id="pin-new" placeholder="New PIN" maxlength="8"/></div>
+          <div class="field"><label>Confirm New PIN</label><input type="password" id="pin-confirm" placeholder="Confirm" maxlength="8"/></div>
+        </div>
+        <button class="btn btn-p" style="--ac:var(--c-amber)" onclick="changePin()">Update PIN</button>
+      </div>
+
+      <div class="scard">
+        <div class="scard-title">📊 Linked Google Sheet</div>
+        <div class="field" style="margin-bottom:14px">
+          <label>Google Sheet URL</label>
+          <input id="sheet-url" readonly placeholder="Auto-loaded after login…" style="font-size:12px"/>
+        </div>
+        <a id="open-sheet" href="#" target="_blank" class="btn btn-g btn-sm">📊 Open Google Sheet ↗</a>
+      </div>
+
+      <div class="scard">
+        <div class="scard-title">⬇ Export Data as CSV</div>
+        <p style="font-size:13px;color:var(--txt2);margin-bottom:16px;line-height:1.7">Download any table as a .csv file — open directly in Excel, Google Sheets, or Numbers.</p>
+        <div style="display:flex;gap:8px;flex-wrap:wrap">
+          <button class="btn btn-csv btn-sm" onclick="dlCSV('daily')">📋 Daily Logs</button>
+          <button class="btn btn-csv btn-sm" onclick="dlCSV('post')">🎫 Post Sales</button>
+          <button class="btn btn-csv btn-sm" onclick="dlCSV('pre')">🤝 Pre Sales</button>
+          <button class="btn btn-csv btn-sm" onclick="dlCSV('app')">💻 App Dev</button>
+          <button class="btn btn-csv btn-sm" onclick="dlCSV('learn')">🎓 Learning</button>
+          <button class="btn btn-p btn-sm" style="--ac:var(--c-amber);margin-left:4px" onclick="dlAllCSV()">⬇ Download All Tables</button>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- EDIT MODAL -->
+<div class="mbg" id="emodal">
+  <div class="modal">
+    <div class="modal-hd">
+      <h3 id="em-title">Edit Entry</h3>
+      <button onclick="cm()">✕</button>
+    </div>
+    <div class="modal-bd" id="em-body"></div>
+    <div class="modal-ft">
+      <button class="btn btn-g btn-sm" onclick="cm()">Cancel</button>
+      <button class="btn btn-p btn-sm" id="em-save" onclick="saveEdit()">Save Changes</button>
+    </div>
+  </div>
+</div>
+
+<script>
+/* ══════════════════════════════════════════════
+   SET THESE TWO VALUES BEFORE USE
+   ══════════════════════════════════════════════ */
+const GAS_URL   = 'https://script.google.com/macros/s/AKfycbz7ZsYoK4Bfafs0V9awNkRAVQgmkkgzkVZ-KvjGpL-FSZOLcIpR9Pc5c0rj7VVW2GXvKw/exec';// to change app_script_url
+const LOCAL_PIN = '1234';
+
+/* API */
+function gRun(fn,...args){
+  if(!GAS_URL)return Promise.reject(new Error('GAS_URL not set. Paste your Web App URL.'));
+  return fetch(GAS_URL,{method:'POST',headers:{'Content-Type':'text/plain'},body:JSON.stringify({fn,args})})
+    .then(r=>{if(!r.ok)throw new Error('HTTP '+r.status);return r.json();})
+    .then(res=>{if(res&&res.__error)throw new Error(res.__error);return res;});
+}
+
+/* STATE */
+const D={daily:[],post:[],pre:[],app:[],learn:[]};
+const TGT={POST:0,PRE:0,APP:0,LEARNING:0};
+let editCtx=null,syncing=false;
+
+/* UTILS */
+function toast(msg,type='inf',ms=3500){
+  const icons={ok:'✅',err:'❌',inf:'ℹ️'};
+  const el=document.createElement('div');el.className='toast '+type;
+  el.innerHTML=(icons[type]||'')+' '+msg;
+  document.getElementById('toast-wrap').appendChild(el);setTimeout(()=>el.remove(),ms);
+}
+function setBtn(id,on,lbl){const b=document.getElementById(id);if(!b)return;b.disabled=on;b.innerHTML=on?'<span class="spin"></span> '+lbl:lbl;}
+function esc(s){return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');}
+function val(id){const e=document.getElementById(id);return e?e.value.trim():'';}
+function $(id){return document.getElementById(id);}
+function today(){return new Date().toLocaleDateString('en-IN',{day:'2-digit',month:'2-digit',year:'numeric'});}
+function todayDay(){return new Date().toLocaleDateString('en-IN',{weekday:'long'});}
+function badge(s){
+  const m={'completed':'b-done','resolved':'b-done','won':'b-done','closed':'b-done',
+    'in progress':'b-prog','proposal sent':'b-prog','demo scheduled':'b-prog','testing':'b-prog',
+    'pending':'b-pend','not started':'b-pend','escalated':'b-pend','lost':'b-pend','planning':'b-pend',
+    'blocked':'b-blok','open':'b-open',
+    'under review':'b-revw','follow up':'b-revw','important':'b-revw',
+    'on hold':'b-arch','cancelled':'b-arch','archived':'b-arch','revisit':'b-arch','needs revisit':'b-arch',
+    'active':'b-done'};
+  return m[(s||'').toLowerCase()]||'b-revw';
+}
+function syncUI(state){
+  const p=$('spill'),d=$('sdot'),l=$('slbl');
+  if(state==='ing'){p.className='sync-pill ing';d.className='sdot pulse';l.textContent='Syncing…';}
+  else if(state==='ok'){p.className='sync-pill ok';d.className='sdot';l.textContent='Synced ✓';setTimeout(()=>{p.className='sync-pill';d.className='sdot';l.textContent='Sync';},3000);}
+  else{p.className='sync-pill';d.className='sdot';l.textContent='Sync';}
+}
+function actBtns(id,ef,df){
+  return`<div class="td-acts"><button class="ico-btn" onclick="${ef}('${id}')" title="Edit">✏️</button><button class="ico-btn btn-d" onclick="${df}('${id}')" title="Delete">🗑️</button></div>`;
+}
+function cmtCell(c){
+  if(!c)return`<td class="td-cmt" style="color:var(--txt3)">—</td>`;
+  return`<td class="td-cmt" title="${esc(c)}" style="color:var(--ac);font-style:italic">💬 ${esc(c)}</td>`;
+}
+function renderErr(tbId,cols,err){
+  const el=$(tbId);if(!el)return;
+  el.innerHTML=`<tr><td colspan="${cols}"><div class="t-empty"><div class="ei">⚠️</div><p>Could not load data.<br><small style="opacity:.6">${esc(err.message)}</small></p></div></td></tr>`;
+}
+function selOpts(opts,sel){return opts.map(o=>`<option value="${o}" ${o===sel?'selected':''}>${o}</option>`).join('');}
+
+/* CSV DOWNLOAD */
+function escCSV(v){const s=String(v===null||v===undefined?'':v);return s.includes(',')||s.includes('"')||s.includes('\n')?'"'+s.replace(/"/g,'""')+'"':s;}
+function buildCSV(headers,rows){const lines=[headers.map(escCSV).join(',')];rows.forEach(r=>lines.push(headers.map(h=>escCSV(r[h]||'')).join(',')));return lines.join('\r\n');}
+function triggerDownload(csv,filename){
+  const blob=new Blob([csv],{type:'text/csv;charset=utf-8;'});
+  const url=URL.createObjectURL(blob);const a=document.createElement('a');
+  a.href=url;a.download=filename;a.click();setTimeout(()=>URL.revokeObjectURL(url),1000);
+}
+function dlCSV(key){
+  const cfg={
+    daily:{headers:['Date','Day','Task','Status','Comments'],rows:D.daily,file:'Daily_Work_Logs'},
+    post:{headers:['Ticket Number','Description','Status','Comments'],rows:D.post,file:'Post_Sales_Tickets'},
+    pre:{headers:['Project Name','Work Description','Status','Comments'],rows:D.pre,file:'Pre_Sales_Activities'},
+    app:{headers:['Application Name','Purpose','Status','Location / Repository','Comments'],rows:D.app,file:'App_Development'},
+    learn:{headers:['Topic / Concept','Status','Comments'],rows:D.learn,file:'Learning_Logs'},
+  };
+  const c=cfg[key];
+  if(!c){toast('Unknown table.','err');return;}
+  if(!c.rows.length){toast('Table is empty — nothing to download.','inf');return;}
+  const date=new Date().toISOString().slice(0,10);
+  triggerDownload(buildCSV(c.headers,c.rows),`${c.file}_${date}.csv`);
+  toast(`Downloaded: ${c.file}.csv`,'ok',2500);
+}
+function dlAllCSV(){['daily','post','pre','app','learn'].forEach((k,i)=>setTimeout(()=>dlCSV(k),i*350));}
+
+/* LOGIN */
+let pinBuf='';
+function pk(d){if(pinBuf.length>=8)return;pinBuf+=d;updDots();if(pinBuf.length>=4)setTimeout(ps,60);}
+function pd(){pinBuf=pinBuf.slice(0,-1);updDots();$('perr').textContent='';}
+function updDots(){for(let i=0;i<4;i++){const d=$('d'+i);if(d)d.className='pdot'+(i<pinBuf.length?' on':'');}}
+function ps(){
+  if(!pinBuf){$('perr').textContent='Enter your PIN.';return;}
+  $('perr').textContent='';
+  const entered=pinBuf;pinBuf='';updDots();
+  gRun('verifyPin',entered).then(r=>{if(r&&r.success)unlock();else showErr();}).catch(()=>{if(entered===LOCAL_PIN)unlock();else showErr();});
+}
+function unlock(){$('login').style.display='none';$('app').style.display='block';initApp();}
+function showErr(){$('perr').textContent='❌ Incorrect PIN. Try again.';}
+function lock(){$('app').style.display='none';$('login').style.display='flex';pinBuf='';updDots();$('perr').textContent='';}
+document.addEventListener('keydown',e=>{
+  if($('login').style.display!=='none'){
+    if(e.key>='0'&&e.key<='9')pk(e.key);
+    else if(e.key==='Backspace')pd();
+    else if(e.key==='Enter')ps();
+  }
+});
+
+/* INIT */
+function initApp(){setHomeDate();loadTargets();syncAll();loadSheetUrl();setInterval(syncAll,60000);}
+function setHomeDate(){
+  const n=new Date();
+  $('h-date').textContent=n.toLocaleDateString('en-IN',{weekday:'long',year:'numeric',month:'long',day:'numeric'});
+  const h=n.getHours();
+  $('h-greet').textContent=h<12?'Good Morning 🌅':h<17?'Good Afternoon ☀️':'Good Evening 🌙';
+  $('nd-date').value=today();$('nd-day').value=todayDay();
+}
+async function loadSheetUrl(){try{const r=await gRun('getSheetUrl');if(r&&r.url){$('sheet-url').value=r.url;$('open-sheet').href=r.url;}}catch(e){}}
+async function syncAll(){
+  if(syncing)return;syncing=true;syncUI('ing');
+  try{await Promise.all([loadDaily(),loadPost(),loadPre(),loadApp(),loadLearn()]);syncUI('ok');updateStats();}
+  catch(e){syncUI('');toast('Sync failed. Check GAS_URL. '+e.message,'err');}
+  finally{syncing=false;}
+}
+function updateStats(){
+  $('st-daily').textContent=D.daily.length;$('st-post').textContent=D.post.length;
+  $('st-pre').textContent=D.pre.length;$('st-app').textContent=D.app.length;$('st-learn').textContent=D.learn.length;
+}
+
+/* NAV */
+function go(name,navEl){
+  document.querySelectorAll('.panel').forEach(p=>p.classList.remove('on'));
+  document.querySelectorAll('.nav').forEach(n=>n.classList.remove('on'));
+  $('sec-'+name).classList.add('on');if(navEl)navEl.classList.add('on');
+  $('sidebar').classList.remove('open');
+}
+function tog(id){const e=$(id);e.style.display=e.style.display==='none'?'block':'none';}
+function toggleTheme(){
+  const h=document.documentElement,d=h.getAttribute('data-theme')==='dark';
+  h.setAttribute('data-theme',d?'light':'dark');
+  $('theme-btn').textContent=d?'🌙':'☀️';localStorage.setItem('oad-t',d?'light':'dark');
+}
+(function(){const t=localStorage.getItem('oad-t');if(t)document.documentElement.setAttribute('data-theme',t);window.addEventListener('DOMContentLoaded',()=>{const b=$('theme-btn');if(b)b.textContent=(localStorage.getItem('oad-t')||'dark')==='light'?'🌙':'☀️';});})();
+function toggleSidebar(){$('sidebar').classList.toggle('open');}
+window.addEventListener('resize',()=>{$('mob-btn').style.display=window.innerWidth<=768?'flex':'none';});
+window.dispatchEvent(new Event('resize'));
+
+/* MODAL */
+function om(title,body,ctx){editCtx=ctx;$('em-title').textContent=title;$('em-body').innerHTML=body;$('emodal').classList.add('open');if(ctx&&ctx.color)$('em-save').style.setProperty('--ac',ctx.color);}
+function cm(){$('emodal').classList.remove('open');editCtx=null;}
+$('emodal').addEventListener('click',e=>{if(e.target.id==='emodal')cm();});
+
+/* ─── FIX 3: TARGETS — Total=all rows, Completed=done statuses, Remaining=total-completed ─── */
+function doneStatuses(k){return{POST:['Resolved','Closed'],PRE:['Won'],APP:['Completed'],LEARNING:['Completed']}[k]||['Completed'];}
+
+function renderTgt(tk,dk,rows){
+  const tgt=TGT[tk]||0;
+  const total=rows.length;
+  const done=rows.filter(r=>doneStatuses(tk).indexOf(r['Status'])!==-1).length;
+  // Remaining = total - completed (not done-statuses count, but actual remainder)
+  const remaining=total-done;
+  const pct=tgt>0?Math.min(100,Math.round((done/tgt)*100)):(total>0?Math.round((done/total)*100):0);
+  const toTarget=tgt>0?Math.max(0,tgt-done):0;
+
+  $('tt-'+dk+'-tot').textContent=total;
+  $('tt-'+dk+'-done').textContent=done;
+  $('tt-'+dk+'-rem').textContent=remaining;
+  $('pb-'+dk).style.width=pct+'%';
+  $('tl-'+dk+'-pct').textContent=pct+'%'+(tgt>0?' of target ('+tgt+')':' completion rate');
+  $('tl-'+dk+'-rem').textContent=tgt>0&&toTarget>0?toTarget+' left to reach target':(tgt>0&&toTarget===0?'🎯 Target reached!':'');
+  const inp=$('tgt-'+dk);if(inp&&!inp.value&&tgt>0)inp.value=tgt;
+}
+
+function updTgt(tk,dk){TGT[tk]=parseInt($('tgt-'+dk).value)||0;renderTgt(tk,dk,D[dk]||[]);}
+async function saveTgt(tk,dk){
+  const v=parseInt($('tgt-'+dk).value)||0;TGT[tk]=v;
+  try{await gRun('setTarget',tk,v);toast('Target saved: '+v,'ok',2000);renderTgt(tk,dk,D[dk]||[]);}
+  catch(e){toast('Could not save target: '+e.message,'err');}
+}
+async function loadTargets(){
+  try{const r=await gRun('getTargets');if(r&&r.targets){Object.assign(TGT,r.targets);const m={POST:'post',PRE:'pre',APP:'app',LEARNING:'learn'};Object.keys(m).forEach(k=>{const e=$('tgt-'+m[k]);if(e&&TGT[k]>0)e.value=TGT[k];});}}catch(e){}
+}
+
+/* TABLE 1: DAILY — FIX 1: No S.No column in render */
+async function loadDaily(){try{const r=await gRun('getDailyLogs');D.daily=r.rows||[];renderDaily();}catch(e){renderErr('tb-daily',6,e);}}
+function renderDaily(){
+  const tb=$('tb-daily');
+  if(!D.daily.length){tb.innerHTML=`<tr><td colspan="6"><div class="t-empty"><div class="ei">📋</div><p>No entries yet.<br>Add your first daily work log!</p></div></td></tr>`;return;}
+  tb.innerHTML=D.daily.slice().reverse().map((r)=>{
+    const hc=!!r['Comments'];
+    return`<tr class="${hc?'has-cmt':''}" style="--ac:var(--c-blue)">
+      <td style="white-space:nowrap;font-size:12px;color:var(--txt2)">${esc(r['Date'])||'—'}</td>
+      <td style="font-size:12px;color:var(--txt3)">${esc(r['Day'])||'—'}</td>
+      <td style="max-width:260px;white-space:pre-wrap;word-break:break-word">${esc(r['Task'])||'—'}</td>
+      <td><span class="badge ${badge(r['Status'])}">${esc(r['Status'])||'—'}</span></td>
+      ${cmtCell(r['Comments'])}
+      <td>${actBtns(r['ID'],'editDaily','delDaily')}</td>
+    </tr>`;
+  }).join('');
+}
+async function saveDaily(){
+  const task=val('nd-task'),status=val('nd-status'),cmt=val('nd-cmt');
+  if(!task){toast('Task description is required.','err');return;}
+  setBtn('nd-btn',true,'Saving…');
+  try{await gRun('addDailyLog',today(),todayDay(),task,status,cmt);$('nd-task').value=$('nd-cmt').value='';tog('df');await loadDaily();updateStats();toast('Entry saved!','ok');}
+  catch(e){toast('Error: '+e.message,'err');}
+  setBtn('nd-btn',false,'Save Entry');
+}
+function editDaily(id){
+  const r=D.daily.find(x=>x['ID']===id);if(!r)return;
+  om('✏️ Edit Daily Work Log',
+    `<div class="field"><label>Task / Work Done</label><textarea id="e-task" rows="4">${esc(r['Task']||'')}</textarea></div>
+     <div class="field"><label>Status</label><select id="e-status">${selOpts(['Completed','In Progress','Pending','Blocked','Under Review'],r['Status'])}</select></div>
+     <div class="field"><label>💬 Comments</label><input class="cmt-field" id="e-cmt" value="${esc(r['Comments']||'')}"/></div>`,
+    {table:'daily',id,color:'var(--c-blue)'});
+}
+async function delDaily(id){if(!confirm('Delete this entry?'))return;try{await gRun('deleteDailyLog',id);await loadDaily();updateStats();toast('Deleted.','inf');}catch(e){toast('Error: '+e.message,'err');}}
+
+/* TABLE 2: POST SALES — FIX 1: No S.No column in render */
+async function loadPost(){try{const r=await gRun('getPostSales');D.post=r.rows||[];renderPost();renderTgt('POST','post',D.post);}catch(e){renderErr('tb-post',5,e);}}
+function renderPost(){
+  const tb=$('tb-post');
+  if(!D.post.length){tb.innerHTML=`<tr><td colspan="5"><div class="t-empty"><div class="ei">🎫</div><p>No tickets yet.</p></div></td></tr>`;return;}
+  tb.innerHTML=D.post.map((r)=>{const hc=!!r['Comments'];
+    return`<tr class="${hc?'has-cmt':''}" style="--ac:var(--c-orange)">
+      <td style="font-weight:700;color:var(--c-orange)">${esc(r['Ticket Number']||'—')}</td>
+      <td style="max-width:240px;white-space:pre-wrap;word-break:break-word">${esc(r['Description']||'—')}</td>
+      <td><span class="badge ${badge(r['Status'])}">${esc(r['Status']||'—')}</span></td>
+      ${cmtCell(r['Comments'])}
+      <td>${actBtns(r['ID'],'editPost','delPost')}</td>
+    </tr>`;
+  }).join('');
+}
+async function savePost(){
+  const ticket=val('np-ticket'),desc=val('np-desc'),status=val('np-status'),cmt=val('np-cmt');
+  if(!ticket||!desc){toast('Ticket number and description required.','err');return;}
+  setBtn('np-btn',true,'Saving…');
+  try{const sno=(await gRun('getNextSno','PostSalesTickets')).sno;await gRun('addPostSale',sno,ticket,desc,status,cmt);$('np-ticket').value=$('np-desc').value=$('np-cmt').value='';tog('pf');await loadPost();updateStats();toast('Ticket saved!','ok');}
+  catch(e){toast('Error: '+e.message,'err');}
+  setBtn('np-btn',false,'Save Ticket');
+}
+function editPost(id){
+  const r=D.post.find(x=>x['ID']===id);if(!r)return;
+  om('✏️ Edit Post Sales Ticket',
+    `<div class="field"><label>Ticket Number</label><input id="e-ticket" value="${esc(r['Ticket Number']||'')}"/></div>
+     <div class="field"><label>Description</label><textarea id="e-desc" rows="3">${esc(r['Description']||'')}</textarea></div>
+     <div class="field"><label>Status</label><select id="e-status">${selOpts(['Open','In Progress','Pending','Resolved','Closed','Escalated'],r['Status'])}</select></div>
+     <div class="field"><label>💬 Comments</label><input class="cmt-field" id="e-cmt" value="${esc(r['Comments']||'')}"/></div>`,
+    {table:'post',id,color:'var(--c-orange)'});
+}
+async function delPost(id){if(!confirm('Delete this ticket?'))return;try{await gRun('deletePostSale',id);await loadPost();updateStats();toast('Deleted.','inf');}catch(e){toast('Error: '+e.message,'err');}}
+
+/* TABLE 3: PRE SALES — FIX 1: No S.No column in render */
+async function loadPre(){try{const r=await gRun('getPreSales');D.pre=r.rows||[];renderPre();renderTgt('PRE','pre',D.pre);}catch(e){renderErr('tb-pre',5,e);}}
+function renderPre(){
+  const tb=$('tb-pre');
+  if(!D.pre.length){tb.innerHTML=`<tr><td colspan="5"><div class="t-empty"><div class="ei">🤝</div><p>No activities yet.</p></div></td></tr>`;return;}
+  tb.innerHTML=D.pre.map((r)=>{const hc=!!r['Comments'];
+    return`<tr class="${hc?'has-cmt':''}" style="--ac:var(--c-green)">
+      <td style="font-weight:700;color:var(--c-green)">${esc(r['Project Name']||'—')}</td>
+      <td style="max-width:220px;white-space:pre-wrap">${esc(r['Work Description']||'—')}</td>
+      <td><span class="badge ${badge(r['Status'])}">${esc(r['Status']||'—')}</span></td>
+      ${cmtCell(r['Comments'])}
+      <td>${actBtns(r['ID'],'editPre','delPre')}</td>
+    </tr>`;
+  }).join('');
+}
+async function savePre(){
+  const proj=val('nre-proj'),work=val('nre-work'),status=val('nre-status'),cmt=val('nre-cmt');
+  if(!proj||!work){toast('Project name and work description required.','err');return;}
+  try{const sno=(await gRun('getNextSno','PreSalesActivities')).sno;await gRun('addPreSale',sno,proj,work,status,cmt);$('nre-proj').value=$('nre-work').value=$('nre-cmt').value='';tog('pref');await loadPre();updateStats();toast('Activity saved!','ok');}
+  catch(e){toast('Error: '+e.message,'err');}
+}
+function editPre(id){
+  const r=D.pre.find(x=>x['ID']===id);if(!r)return;
+  om('✏️ Edit Pre Sales Activity',
+    `<div class="field"><label>Project Name</label><input id="e-proj" value="${esc(r['Project Name']||'')}"/></div>
+     <div class="field"><label>Work Description</label><textarea id="e-work" rows="3">${esc(r['Work Description']||'')}</textarea></div>
+     <div class="field"><label>Status</label><select id="e-status">${selOpts(['In Progress','Proposal Sent','Demo Scheduled','Won','Lost','On Hold'],r['Status'])}</select></div>
+     <div class="field"><label>💬 Comments</label><input class="cmt-field" id="e-cmt" value="${esc(r['Comments']||'')}"/></div>`,
+    {table:'pre',id,color:'var(--c-green)'});
+}
+async function delPre(id){if(!confirm('Delete this activity?'))return;try{await gRun('deletePreSale',id);await loadPre();updateStats();toast('Deleted.','inf');}catch(e){toast('Error: '+e.message,'err');}}
+
+/* TABLE 4: APP DEV — FIX 1: No S.No, FIX 2: Status field added */
+async function loadApp(){try{const r=await gRun('getAppDev');D.app=r.rows||[];renderApp();renderTgt('APP','app',D.app);}catch(e){renderErr('tb-app',6,e);}}
+function renderApp(){
+  const tb=$('tb-app');
+  if(!D.app.length){tb.innerHTML=`<tr><td colspan="6"><div class="t-empty"><div class="ei">💻</div><p>No apps tracked yet.</p></div></td></tr>`;return;}
+  tb.innerHTML=D.app.map((r)=>{const hc=!!r['Comments'];
+    return`<tr class="${hc?'has-cmt':''}" style="--ac:var(--c-purple)">
+      <td style="font-weight:700;color:var(--c-purple)">${esc(r['Application Name']||'—')}</td>
+      <td style="max-width:180px">${esc(r['Purpose']||'—')}</td>
+      <td><span class="badge ${badge(r['Status'])}">${esc(r['Status']||'—')}</span></td>
+      <td style="font-size:12px;max-width:160px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;color:var(--txt2)" title="${esc(r['Location / Repository']||'')}">${esc(r['Location / Repository']||'—')}</td>
+      ${cmtCell(r['Comments'])}
+      <td>${actBtns(r['ID'],'editApp','delApp')}</td>
+    </tr>`;
+  }).join('');
+}
+async function saveApp(){
+  const name=val('na-name'),purp=val('na-purp'),loc=val('na-loc'),status=val('na-status'),cmt=val('na-cmt');
+  if(!name){toast('Application name is required.','err');return;}
+  try{const sno=(await gRun('getNextSno','ApplicationDevelopment')).sno;await gRun('addAppDev',sno,name,purp,loc,status,cmt);['na-name','na-purp','na-loc','na-cmt'].forEach(i=>$(i).value='');$('na-status').selectedIndex=1;tog('af');await loadApp();updateStats();toast('App saved!','ok');}
+  catch(e){toast('Error: '+e.message,'err');}
+}
+function editApp(id){
+  const r=D.app.find(x=>x['ID']===id);if(!r)return;
+  om('✏️ Edit Application',
+    `<div class="field"><label>Application Name</label><input id="e-aname" value="${esc(r['Application Name']||'')}"/></div>
+     <div class="field"><label>Purpose</label><input id="e-apurp" value="${esc(r['Purpose']||'')}"/></div>
+     <div class="field"><label>Status</label><select id="e-astatus">${selOpts(['Planning','In Progress','Under Review','Testing','Completed','On Hold','Archived'],r['Status'])}</select></div>
+     <div class="field"><label>Location / Repository</label><input id="e-aloc" value="${esc(r['Location / Repository']||'')}"/></div>
+     <div class="field"><label>💬 Comments</label><input class="cmt-field" id="e-cmt" value="${esc(r['Comments']||'')}"/></div>`,
+    {table:'app',id,color:'var(--c-purple)'});
+}
+async function delApp(id){if(!confirm('Delete this app record?'))return;try{await gRun('deleteAppDev',id);await loadApp();updateStats();toast('Deleted.','inf');}catch(e){toast('Error: '+e.message,'err');}}
+
+/* TABLE 5: LEARNING — FIX 1: No S.No column in render */
+async function loadLearn(){try{const r=await gRun('getLearning');D.learn=r.rows||[];renderLearn();renderTgt('LEARNING','learn',D.learn);}catch(e){renderErr('tb-learn',4,e);}}
+function renderLearn(){
+  const tb=$('tb-learn');
+  if(!D.learn.length){tb.innerHTML=`<tr><td colspan="4"><div class="t-empty"><div class="ei">🎓</div><p>No learning entries yet.</p></div></td></tr>`;return;}
+  tb.innerHTML=D.learn.map((r)=>{const hc=!!r['Comments'];
+    return`<tr class="${hc?'has-cmt':''}" style="--ac:var(--c-cyan)">
+      <td style="font-weight:600;color:var(--c-cyan)">${esc(r['Topic / Concept']||'—')}</td>
+      <td><span class="badge ${badge(r['Status'])}">${esc(r['Status']||'—')}</span></td>
+      ${cmtCell(r['Comments'])}
+      <td>${actBtns(r['ID'],'editLearn','delLearn')}</td>
+    </tr>`;
+  }).join('');
+}
+async function saveLearn(){
+  const topic=val('nl-topic'),status=val('nl-status'),cmt=val('nl-cmt');
+  if(!topic){toast('Topic / concept is required.','err');return;}
+  try{const sno=(await gRun('getNextSno','LearningLogs')).sno;await gRun('addLearning',sno,topic,status,cmt);$('nl-topic').value=$('nl-cmt').value='';tog('lf');await loadLearn();updateStats();toast('Learning entry saved!','ok');}
+  catch(e){toast('Error: '+e.message,'err');}
+}
+function editLearn(id){
+  const r=D.learn.find(x=>x['ID']===id);if(!r)return;
+  om('✏️ Edit Learning Entry',
+    `<div class="field"><label>Topic / Concept</label><input id="e-topic" value="${esc(r['Topic / Concept']||'')}"/></div>
+     <div class="field"><label>Status</label><select id="e-status">${selOpts(['Not Started','In Progress','Completed','Revisit'],r['Status'])}</select></div>
+     <div class="field"><label>💬 Comments</label><input class="cmt-field" id="e-cmt" value="${esc(r['Comments']||'')}"/></div>`,
+    {table:'learn',id,color:'var(--c-cyan)'});
+}
+async function delLearn(id){if(!confirm('Delete this entry?'))return;try{await gRun('deleteLearning',id);await loadLearn();updateStats();toast('Deleted.','inf');}catch(e){toast('Error: '+e.message,'err');}}
+
+/* EDIT MODAL SAVE */
+async function saveEdit(){
+  if(!editCtx)return;const{table,id}=editCtx;
+  setBtn('em-save',true,'Saving…');
+  try{
+    if(table==='daily'){await gRun('updateDailyLog',id,val('e-task'),val('e-status'),val('e-cmt'));await loadDaily();}
+    else if(table==='post'){await gRun('updatePostSale',id,val('e-ticket'),val('e-desc'),val('e-status'),val('e-cmt'));await loadPost();}
+    else if(table==='pre'){await gRun('updatePreSale',id,val('e-proj'),val('e-work'),val('e-status'),val('e-cmt'));await loadPre();}
+    // FIX 2: App edit now includes status (e-astatus)
+    else if(table==='app'){await gRun('updateAppDev',id,val('e-aname'),val('e-apurp'),val('e-aloc'),val('e-astatus'),val('e-cmt'));await loadApp();}
+    else if(table==='learn'){await gRun('updateLearning',id,val('e-topic'),val('e-status'),val('e-cmt'));await loadLearn();}
+    cm();toast('Changes saved!','ok');
+  }catch(e){toast('Error: '+e.message,'err');}
+  setBtn('em-save',false,'Save Changes');
+}
+
+/* SETTINGS */
+async function changePin(){
+  const old=val('pin-old'),nw=val('pin-new'),conf=val('pin-confirm');
+  if(!old||!nw){toast('Fill in all PIN fields.','err');return;}
+  if(nw!==conf){toast('New PINs do not match.','err');return;}
+  if(nw.length<4){toast('PIN must be at least 4 digits.','err');return;}
+  try{
+    const r=await gRun('changePin',old,nw);
+    if(r.success){toast('PIN updated! Also update LOCAL_PIN in index.html.','ok');['pin-old','pin-new','pin-confirm'].forEach(i=>$(i).value='');}
+    else toast('Error: '+r.error,'err');
+  }catch(e){toast('Error: '+e.message,'err');}
+}
+
+window.addEventListener('load',setHomeDate);
+</script>
+</body>
+</html>
