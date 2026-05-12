@@ -3,235 +3,328 @@
 <head>
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width,initial-scale=1.0"/>
-<title>Office Activity Dashboard</title>
+<title>Activity Dashboard</title>
 <link rel="preconnect" href="https://fonts.googleapis.com"/>
-<link rel="icon" href="image.png">
-<link rel="apple-touch-icon" href="image.png">
-<link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800&family=Plus+Jakarta+Sans:ital,wght@0,400;0,500;0,600;0,700;1,400&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet"/>
 <style>
 :root{
-  --ff:'DM Sans',sans-serif;--fm:'Space Mono',monospace;
-  --c-blue:#3B82F6;--c-orange:#F97316;--c-green:#10B981;
-  --c-purple:#A855F7;--c-cyan:#06B6D4;--c-amber:#F59E0B;
-  --r:10px;--tr:all 0.2s ease;
+  --ff:'Plus Jakarta Sans',sans-serif;
+  --fh:'Outfit',sans-serif;
+  --fm:'Space Mono',monospace;
+  --c-blue:#4A9EFF;
+  --c-orange:#FF7A35;
+  --c-green:#10D98B;
+  --c-purple:#B06EFF;
+  --c-cyan:#0DD9F5;
+  --c-amber:#FFB830;
+  --c-teal:#14D4B2;
+  --r:10px;
+  --tr:all .2s ease;
+  --sidebar-w:240px;
+  --top-h:58px;
 }
 [data-theme="dark"]{
-  --bg:#07101F;--surface:#0C1828;--card:#101E30;--card2:#142236;
-  --input-bg:#09121E;--border:#1A2C42;--border-h:#253E58;
-  --txt:#DDE8F6;--txt2:#6E88A8;--txt3:#334D66;
-  --shadow:0 4px 24px rgba(0,0,0,.55);--shadow-lg:0 8px 40px rgba(0,0,0,.7);
+  --bg:#060D1B;--surface:#0B1526;--card:#0F1D33;--card2:#132240;
+  --input-bg:#091322;--border:#192C46;--border-h:#213D60;
+  --txt:#E0EAFF;--txt2:#5F7EA8;--txt3:#2E4464;
+  --shadow:0 4px 24px rgba(0,0,0,.6);--shadow-lg:0 8px 40px rgba(0,0,0,.8);
+  --grid:rgba(255,255,255,.018);
 }
 [data-theme="light"]{
-  --bg:#EEF3FC;--surface:#FFFFFF;--card:#F5F8FF;--card2:#EBF0FA;
-  --input-bg:#E8EEFA;--border:#C8D8EE;--border-h:#A8BDD8;
-  --txt:#0C1828;--txt2:#3E5470;--txt3:#8AA0BC;
-  --shadow:0 4px 24px rgba(0,60,160,.07);--shadow-lg:0 8px 40px rgba(0,60,160,.1);
+  --bg:#EFF4FF;--surface:#FFFFFF;--card:#F5F9FF;--card2:#EBF2FF;
+  --input-bg:#E5EEFF;--border:#C5D6EE;--border-h:#9DB8DA;
+  --txt:#0A1626;--txt2:#3A5070;--txt3:#7A9ABE;
+  --shadow:0 4px 24px rgba(0,50,160,.07);--shadow-lg:0 8px 40px rgba(0,50,160,.12);
+  --grid:rgba(0,40,180,.025);
 }
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
 html{font-size:14px;scroll-behavior:smooth}
 body{font-family:var(--ff);background:var(--bg);color:var(--txt);min-height:100vh;transition:background .25s,color .25s;overflow-x:hidden}
+body::before{content:'';position:fixed;inset:0;background-image:linear-gradient(var(--grid) 1px,transparent 1px),linear-gradient(90deg,var(--grid) 1px,transparent 1px);background-size:48px 48px;pointer-events:none;z-index:0}
+#login,#app,#toast-wrap,.mbg{position:relative;z-index:1}
 button{cursor:pointer;font-family:var(--ff)}
 input,select,textarea{font-family:var(--ff);color:var(--txt);background:var(--input-bg);border:1px solid var(--border);border-radius:var(--r);outline:none;transition:var(--tr)}
 input:focus,select:focus,textarea:focus{border-color:var(--ac,var(--c-blue));box-shadow:0 0 0 3px color-mix(in srgb,var(--ac,var(--c-blue)) 14%,transparent)}
-textarea{resize:vertical}select option{background:var(--surface)}
+textarea{resize:vertical}
+select option{background:var(--surface)}
 ::-webkit-scrollbar{width:4px;height:4px}
 ::-webkit-scrollbar-thumb{background:var(--border-h);border-radius:4px}
 ::-webkit-scrollbar-track{background:transparent}
 
-/* BUTTONS */
+/* ── BUTTONS ── */
 .btn{display:inline-flex;align-items:center;gap:6px;padding:8px 18px;border-radius:var(--r);border:none;font-size:13px;font-weight:600;transition:var(--tr);white-space:nowrap}
-.btn-p{background:var(--ac,var(--c-blue));color:#fff;box-shadow:0 2px 8px color-mix(in srgb,var(--ac,var(--c-blue)) 28%,transparent)}
-.btn-p:hover{filter:brightness(1.1);transform:translateY(-1px)}
+.btn-p{background:var(--ac,var(--c-blue));color:#fff;box-shadow:0 2px 12px color-mix(in srgb,var(--ac,var(--c-blue)) 35%,transparent)}
+.btn-p:hover{filter:brightness(1.12);transform:translateY(-1px);box-shadow:0 5px 18px color-mix(in srgb,var(--ac,var(--c-blue)) 45%,transparent)}
 .btn-g{background:transparent;color:var(--txt2);border:1px solid var(--border)}
-.btn-g:hover{border-color:var(--ac,var(--c-blue));color:var(--ac,var(--c-blue));background:color-mix(in srgb,var(--ac,var(--c-blue)) 5%,transparent)}
-.btn-csv{background:rgba(16,185,129,.1);color:#10B981;border:1px solid rgba(16,185,129,.25)}
-.btn-csv:hover{background:rgba(16,185,129,.2)}
+.btn-g:hover{border-color:var(--ac,var(--c-blue));color:var(--ac,var(--c-blue));background:color-mix(in srgb,var(--ac,var(--c-blue)) 7%,transparent)}
+.btn-csv{background:rgba(16,217,139,.1);color:#10D98B;border:1px solid rgba(16,217,139,.25)}
+.btn-csv:hover{background:rgba(16,217,139,.2)}
 .btn-d{background:rgba(239,68,68,.08);color:#F87171;border:1px solid rgba(239,68,68,.18)}
-.btn-d:hover{background:rgba(239,68,68,.16)}
+.btn-d:hover{background:rgba(239,68,68,.18)}
 .btn-sm{padding:5px 13px;font-size:12px}
 .btn:disabled{opacity:.4;cursor:not-allowed;transform:none!important;filter:none!important}
-.ico-btn{width:30px;height:30px;border-radius:7px;background:var(--card);border:1px solid var(--border);color:var(--txt2);font-size:13px;display:flex;align-items:center;justify-content:center;transition:var(--tr);cursor:pointer}
+.ico-btn{width:32px;height:32px;border-radius:8px;background:var(--card);border:1px solid var(--border);color:var(--txt2);font-size:13px;display:flex;align-items:center;justify-content:center;transition:var(--tr);cursor:pointer}
 .ico-btn:hover{border-color:var(--ac,var(--c-blue));color:var(--ac,var(--c-blue))}
 
-/* FORM */
+/* ── FORM ── */
 .field{display:flex;flex-direction:column;gap:5px}
-.field label{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--txt3)}
-.field input,.field select,.field textarea{padding:8px 12px;font-size:13.5px;width:100%}
+.field label{font-size:10px;font-weight:800;text-transform:uppercase;letter-spacing:.08em;color:var(--txt3)}
+.field input,.field select,.field textarea{padding:9px 12px;font-size:13.5px;width:100%}
 .g2{display:grid;grid-template-columns:1fr 1fr;gap:12px}
 .g3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px}
 
-/* BADGES */
-.badge{display:inline-flex;align-items:center;gap:4px;padding:3px 9px;border-radius:20px;font-size:11px;font-weight:600;white-space:nowrap}
+/* ── BADGES ── */
+.badge{display:inline-flex;align-items:center;gap:4px;padding:3px 10px;border-radius:20px;font-size:10.5px;font-weight:700;white-space:nowrap}
 .badge::before{content:'';width:5px;height:5px;border-radius:50%;background:currentColor;flex-shrink:0}
-.b-done{background:rgba(16,185,129,.12);color:#10B981}
-.b-prog{background:rgba(245,158,11,.12);color:#F59E0B}
-.b-pend{background:rgba(239,68,68,.12);color:#F87171}
-.b-blok{background:rgba(168,85,247,.12);color:#A855F7}
-.b-open{background:rgba(249,115,22,.12);color:#F97316}
-.b-revw{background:rgba(59,130,246,.12);color:#3B82F6}
-.b-arch{background:rgba(100,116,139,.12);color:#64748B}
+.b-done{background:rgba(16,217,139,.1);color:#10D98B}
+.b-prog{background:rgba(255,184,48,.1);color:#FFB830}
+.b-pend{background:rgba(248,113,113,.1);color:#F87171}
+.b-blok{background:rgba(176,110,255,.1);color:#B06EFF}
+.b-open{background:rgba(255,122,53,.1);color:#FF7A35}
+.b-revw{background:rgba(74,158,255,.1);color:#4A9EFF}
+.b-arch{background:rgba(100,116,139,.1);color:#64748B}
 
-/* TOAST */
+/* ── TOAST ── */
 #toast-wrap{position:fixed;top:18px;right:18px;z-index:9999;display:flex;flex-direction:column;gap:7px}
 .toast{padding:10px 16px;border-radius:var(--r);background:var(--card2);border:1px solid var(--border);box-shadow:var(--shadow-lg);font-size:13px;font-weight:500;max-width:310px;animation:tIn .25s ease;display:flex;align-items:center;gap:8px}
-.toast.ok{border-color:#10B981;color:#10B981}
-.toast.err{border-color:#F87171;color:#F87171}
-.toast.inf{border-color:var(--c-blue);color:var(--c-blue)}
+.toast.ok{border-color:#10D98B;color:#10D98B}.toast.err{border-color:#F87171;color:#F87171}.toast.inf{border-color:var(--c-blue);color:var(--c-blue)}
 @keyframes tIn{from{opacity:0;transform:translateX(16px)}to{opacity:1;transform:none}}
 
-/* MODAL */
-.mbg{display:none;position:fixed;inset:0;background:rgba(0,0,0,.65);backdrop-filter:blur(6px);z-index:500;align-items:center;justify-content:center;padding:14px}
+/* ── MODAL ── */
+.mbg{display:none;position:fixed;inset:0;background:rgba(0,0,0,.75);backdrop-filter:blur(8px);z-index:500;align-items:center;justify-content:center;padding:14px}
 .mbg.open{display:flex}
 .modal{background:var(--card2);border:1px solid var(--border);border-radius:16px;padding:24px;width:100%;max-width:500px;box-shadow:var(--shadow-lg);animation:mIn .25s ease;max-height:90vh;overflow-y:auto}
 .modal-hd{display:flex;align-items:center;justify-content:space-between;margin-bottom:20px}
-.modal-hd h3{font-size:16px;font-weight:700}
-.modal-hd button{background:none;border:none;color:var(--txt3);font-size:18px;cursor:pointer;padding:2px;line-height:1;transition:var(--tr)}
+.modal-hd h3{font-family:var(--fh);font-size:16px;font-weight:700}
+.modal-hd button{background:none;border:none;color:var(--txt3);font-size:18px;cursor:pointer;line-height:1;transition:var(--tr)}
 .modal-hd button:hover{color:var(--txt)}
 .modal-bd{display:flex;flex-direction:column;gap:12px}
 .modal-ft{display:flex;gap:8px;justify-content:flex-end;margin-top:20px}
 @keyframes mIn{from{opacity:0;transform:translateY(-12px) scale(.98)}to{opacity:1;transform:none}}
 
-/* SPINNER */
 .spin{display:inline-block;width:14px;height:14px;border:2px solid rgba(255,255,255,.2);border-top-color:#fff;border-radius:50%;animation:rot .6s linear infinite}
 @keyframes rot{to{transform:rotate(360deg)}}
 
-/* LOGIN */
+/* ═══════════════════════════════════════
+   LOGIN
+═══════════════════════════════════════ */
 #login{position:fixed;inset:0;z-index:9000;display:flex;align-items:center;justify-content:center;background:var(--bg);padding:20px}
-#login::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse 55% 45% at 50% 50%,rgba(59,130,246,.08) 0%,transparent 70%);pointer-events:none}
-.lcard{position:relative;width:100%;max-width:340px;background:var(--card2);border:1px solid var(--border);border-radius:20px;padding:36px 30px;text-align:center;animation:lIn .4s ease;box-shadow:var(--shadow-lg)}
-@keyframes lIn{from{opacity:0;transform:translateY(20px) scale(.96)}to{opacity:1;transform:none}}
-.llogo{width:60px;height:60px;border-radius:17px;margin:0 auto 18px;background:linear-gradient(135deg,var(--c-blue),#1D4ED8);display:flex;align-items:center;justify-content:center;font-size:27px;box-shadow:0 8px 24px rgba(59,130,246,.35)}
-.ltitle{font-size:18px;font-weight:700;margin-bottom:3px;letter-spacing:-.01em}
+#login::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse 60% 55% at 50% 50%,color-mix(in srgb,var(--c-blue) 10%,transparent) 0%,transparent 70%);pointer-events:none}
+.lcard{position:relative;width:100%;max-width:340px;background:var(--card2);border:1px solid var(--border);border-radius:22px;padding:38px 30px;text-align:center;animation:lIn .4s ease;box-shadow:var(--shadow-lg)}
+.lcard::before{content:'';position:absolute;inset:-1px;border-radius:22px;background:linear-gradient(135deg,color-mix(in srgb,var(--c-blue) 25%,transparent),transparent 50%,color-mix(in srgb,var(--c-purple) 15%,transparent));z-index:-1;border-radius:22px}
+@keyframes lIn{from{opacity:0;transform:translateY(22px) scale(.96)}to{opacity:1;transform:none}}
+.llogo{width:66px;height:66px;border-radius:18px;margin:0 auto 18px;background:linear-gradient(135deg,var(--c-blue),#1A5FCC);display:flex;align-items:center;justify-content:center;font-size:30px;box-shadow:0 8px 30px rgba(74,158,255,.4)}
+.ltitle{font-family:var(--fh);font-size:20px;font-weight:800;margin-bottom:4px;letter-spacing:-.03em}
 .lsub{font-size:12.5px;color:var(--txt3);margin-bottom:26px}
-.pdots{display:flex;gap:12px;justify-content:center;margin-bottom:24px}
-.pdot{width:13px;height:13px;border-radius:50%;border:2px solid var(--border-h);transition:var(--tr)}
-.pdot.on{background:var(--c-blue);border-color:var(--c-blue);box-shadow:0 0 8px rgba(59,130,246,.55)}
-.ppad{display:grid;grid-template-columns:repeat(3,1fr);gap:9px}
-.pkey{padding:13px;border-radius:var(--r);background:var(--input-bg);border:1px solid var(--border);font-size:17px;font-weight:700;color:var(--txt);transition:var(--tr);font-family:var(--fm)}
-.pkey:hover{background:var(--surface);border-color:var(--c-blue)}
+.pdots{display:flex;gap:14px;justify-content:center;margin-bottom:24px}
+.pdot{width:12px;height:12px;border-radius:50%;border:2px solid var(--border-h);transition:var(--tr)}
+.pdot.on{background:var(--c-blue);border-color:var(--c-blue);box-shadow:0 0 10px rgba(74,158,255,.55);transform:scale(1.15)}
+.ppad{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+.pkey{padding:14px;border-radius:var(--r);background:var(--input-bg);border:1px solid var(--border);font-size:18px;font-weight:700;color:var(--txt);transition:var(--tr);font-family:var(--fm)}
+.pkey:hover{background:var(--surface);border-color:var(--c-blue);transform:scale(1.04)}
 .pkey:active{transform:scale(.92)}
-.pkey.go{background:var(--c-blue);color:#fff;border-color:transparent;box-shadow:0 4px 14px rgba(59,130,246,.4)}
-.pkey.go:hover{filter:brightness(1.1)}
-.perr{color:#F87171;font-size:12.5px;min-height:18px;margin-top:6px}
+.pkey.go{background:var(--c-blue);color:#fff;border-color:transparent;box-shadow:0 4px 16px rgba(74,158,255,.4)}
+.pkey.go:hover{filter:brightness(1.12)}
+.perr{color:#F87171;font-size:12.5px;min-height:18px;margin-top:8px}
 
-/* APP SHELL */
+/* ═══════════════════════════════════════
+   APP SHELL
+═══════════════════════════════════════ */
 #app{display:none;min-height:100vh}
 
 /* TOPBAR */
-.topbar{position:fixed;top:0;left:0;right:0;height:56px;z-index:200;background:var(--surface);border-bottom:1px solid var(--border);display:flex;align-items:center;padding:0 18px;gap:12px}
-.brand{display:flex;align-items:center;gap:9px;font-size:14.5px;font-weight:700;white-space:nowrap;letter-spacing:-.01em}
-.brand-ico{width:32px;height:32px;border-radius:9px;background:linear-gradient(135deg,var(--c-blue),#1D4ED8);display:flex;align-items:center;justify-content:center;font-size:14px;box-shadow:0 3px 10px rgba(59,130,246,.3)}
+.topbar{position:fixed;top:0;left:0;right:0;height:var(--top-h);z-index:200;background:color-mix(in srgb,var(--surface) 92%,transparent);backdrop-filter:blur(14px);border-bottom:1px solid var(--border);display:flex;align-items:center;padding:0 16px;gap:10px}
+.brand{display:flex;align-items:center;gap:10px;font-family:var(--fh);font-size:15px;font-weight:800;white-space:nowrap;letter-spacing:-.03em}
+.brand-ico{width:34px;height:34px;border-radius:10px;background:linear-gradient(135deg,var(--c-blue),#1A5FCC);display:flex;align-items:center;justify-content:center;font-size:16px;box-shadow:0 3px 12px rgba(74,158,255,.35)}
 .top-sp{flex:1}
-.sync-pill{display:flex;align-items:center;gap:5px;padding:5px 12px;border-radius:18px;font-size:11.5px;font-weight:600;background:var(--card);border:1px solid var(--border);color:var(--txt3);cursor:pointer;transition:var(--tr)}
-.sync-pill.ing{color:var(--c-blue);border-color:var(--c-blue)}
-.sync-pill.ok{color:#10B981;border-color:#10B981}
-.sdot{width:6px;height:6px;border-radius:50%;background:currentColor}
-.sdot.pulse{animation:pd 1s infinite}
-@keyframes pd{0%,100%{opacity:1}50%{opacity:.25}}
+.sync-pill{display:flex;align-items:center;gap:6px;padding:5px 14px;border-radius:20px;font-family:var(--fm);font-size:11px;font-weight:400;background:var(--card);border:1px solid var(--border);color:var(--txt3);cursor:pointer;transition:var(--tr)}
+.sync-pill:hover{border-color:var(--c-blue);color:var(--c-blue)}
+.sync-pill.ing{color:var(--c-blue);border-color:color-mix(in srgb,var(--c-blue) 40%,transparent);background:color-mix(in srgb,var(--c-blue) 8%,var(--card))}
+.sync-pill.ok{color:#10D98B;border-color:color-mix(in srgb,#10D98B 40%,transparent);background:color-mix(in srgb,#10D98B 8%,var(--card))}
+.sdot{width:6px;height:6px;border-radius:50%;background:currentColor;flex-shrink:0}
+.sdot.pulse{animation:pd 1s ease-in-out infinite}
+@keyframes pd{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.25;transform:scale(.6)}}
+#mob-btn{display:none}
 
 /* SIDEBAR */
-.sidebar{position:fixed;left:0;top:56px;bottom:0;width:214px;z-index:100;background:var(--surface);border-right:1px solid var(--border);display:flex;flex-direction:column;overflow-y:auto;padding:14px 0}
-.slbl{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:var(--txt3);padding:12px 18px 5px;user-select:none}
-.nav{display:flex;align-items:center;gap:10px;padding:9px 18px;margin:1px 7px;border-radius:var(--r);font-size:13px;font-weight:500;color:var(--txt2);cursor:pointer;transition:var(--tr);border:1px solid transparent}
+.sidebar{position:fixed;left:0;top:var(--top-h);bottom:0;width:var(--sidebar-w);z-index:100;background:color-mix(in srgb,var(--surface) 95%,transparent);backdrop-filter:blur(10px);border-right:1px solid var(--border);display:flex;flex-direction:column;overflow-y:auto;overflow-x:hidden;padding:10px 0 20px;transition:width .22s ease}
+.sidebar.collapsed{width:66px}
+.s-top{display:flex;align-items:center;justify-content:flex-end;padding:6px 10px 12px;gap:8px}
+.s-brand-mini{font-family:var(--fh);font-size:12px;font-weight:700;color:var(--txt3);flex:1;white-space:nowrap;overflow:hidden;opacity:1;transition:opacity .15s}
+.sidebar.collapsed .s-brand-mini{opacity:0;pointer-events:none;width:0}
+.s-col-btn{width:26px;height:26px;border-radius:7px;background:var(--card);border:1px solid var(--border);color:var(--txt3);font-size:12px;display:flex;align-items:center;justify-content:center;cursor:pointer;transition:var(--tr);flex-shrink:0}
+.s-col-btn:hover{border-color:var(--c-blue);color:var(--c-blue)}
+.slbl{font-size:9px;font-weight:800;text-transform:uppercase;letter-spacing:.12em;color:var(--txt3);padding:10px 16px 4px;user-select:none;white-space:nowrap;overflow:hidden;transition:opacity .15s,height .2s,padding .2s}
+.sidebar.collapsed .slbl{opacity:0;height:0;padding:4px 0;pointer-events:none}
+.nav{display:flex;align-items:center;gap:10px;padding:9px 13px;margin:1px 6px;border-radius:var(--r);font-size:13px;font-weight:500;color:var(--txt2);cursor:pointer;transition:var(--tr);border:1px solid transparent;white-space:nowrap;overflow:hidden;position:relative}
 .nav:hover{background:var(--card);color:var(--txt)}
-.nav.on{background:color-mix(in srgb,var(--nc) 10%,transparent);color:var(--nc);border-color:color-mix(in srgb,var(--nc) 20%,transparent);font-weight:600}
-.ndot{width:7px;height:7px;border-radius:50%;flex-shrink:0;background:var(--nc,var(--txt3))}
-.nav:not(.on) .ndot{opacity:.3}
-.div-line{height:1px;background:var(--border);margin:10px 14px}
+.nav.on{background:color-mix(in srgb,var(--nc) 11%,transparent);color:var(--nc);border-color:color-mix(in srgb,var(--nc) 22%,transparent);font-weight:600}
+.nav-ico{font-size:15px;flex-shrink:0;width:22px;text-align:center}
+.nav-lbl{transition:opacity .15s;overflow:hidden;white-space:nowrap}
+.sidebar.collapsed .nav-lbl{opacity:0;width:0;pointer-events:none}
+.sidebar.collapsed .nav{justify-content:center;padding:9px 8px}
+.sidebar.collapsed .nav-ico{width:auto}
+.nav-tip{display:none;position:absolute;left:calc(100% + 8px);top:50%;transform:translateY(-50%);background:var(--card2);border:1px solid var(--border);border-radius:8px;padding:5px 10px;font-size:12px;color:var(--txt);white-space:nowrap;box-shadow:var(--shadow);z-index:300;pointer-events:none}
+.sidebar.collapsed .nav:hover .nav-tip{display:block}
+.div-line{height:1px;background:var(--border);margin:8px 12px}
 
 /* CONTENT */
-.content{margin-left:214px;padding-top:56px;min-height:100vh}
-.panel{display:none;padding:26px 28px 52px;animation:pIn .25s ease}
+.content{margin-left:var(--sidebar-w);padding-top:var(--top-h);min-height:100vh;transition:margin-left .22s ease}
+.content.cx{margin-left:66px}
+.panel{display:none;padding:28px 30px 60px;animation:pIn .25s ease}
 .panel.on{display:block}
-@keyframes pIn{from{opacity:0;transform:translateY(7px)}to{opacity:1;transform:none}}
+@keyframes pIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
 
 /* SECTION HEADER */
-.sec-hd{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:18px;gap:14px;flex-wrap:wrap}
-.sec-title{display:flex;align-items:center;gap:12px}
-.sec-ico{width:44px;height:44px;border-radius:12px;background:color-mix(in srgb,var(--ac) 14%,transparent);border:1px solid color-mix(in srgb,var(--ac) 22%,transparent);display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0}
-.sec-title h2{font-size:19px;font-weight:700;letter-spacing:-.02em}
+.sec-hd{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:20px;gap:14px;flex-wrap:wrap}
+.sec-title{display:flex;align-items:center;gap:14px}
+.sec-ico{width:46px;height:46px;border-radius:13px;background:color-mix(in srgb,var(--ac) 14%,transparent);border:1px solid color-mix(in srgb,var(--ac) 22%,transparent);display:flex;align-items:center;justify-content:center;font-size:22px;flex-shrink:0;box-shadow:0 4px 14px color-mix(in srgb,var(--ac) 20%,transparent)}
+.sec-title h2{font-family:var(--fh);font-size:20px;font-weight:800;letter-spacing:-.03em}
 .sec-title p{font-size:12.5px;color:var(--txt3);margin-top:2px}
 .sec-acts{display:flex;gap:7px;flex-wrap:wrap;align-items:center}
 
-/* TRACKER BAR */
-.tracker{background:var(--card2);border:1px solid var(--border);border-radius:12px;margin-bottom:16px;overflow:hidden;box-shadow:var(--shadow);display:grid;grid-template-columns:1fr 1fr 1fr}
-.tstat-card{display:flex;flex-direction:column;align-items:center;justify-content:center;padding:18px 12px;gap:3px;border-bottom:1px solid var(--border)}
+/* TRACKER */
+.tracker{background:var(--card2);border:1px solid var(--border);border-radius:14px;margin-bottom:18px;overflow:hidden;box-shadow:var(--shadow);display:grid;grid-template-columns:1fr 1fr 1fr}
+.tstat-card{display:flex;flex-direction:column;align-items:center;justify-content:center;padding:18px 12px;gap:4px;border-bottom:1px solid var(--border)}
 .tstat-card:not(:last-child){border-right:1px solid var(--border)}
-.tstat-card .tv{font-family:var(--fm);font-size:28px;font-weight:700;line-height:1}
-.tstat-card .tl{font-size:10.5px;font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:var(--txt3);margin-top:2px}
-.tstat-card.total .tv{color:var(--ac,var(--c-blue))}
-.tstat-card.done .tv{color:#10B981}
-.tstat-card.rem .tv{color:#F59E0B}
-.tstat-card .tind{width:20px;height:3px;border-radius:2px;margin-top:5px;background:currentColor;opacity:.3}
-.tstat-card.total .tind{color:var(--ac,var(--c-blue))}
-.tstat-card.done .tind{color:#10B981}
-.tstat-card.rem .tind{color:#F59E0B}
-/* bottom row spans all 3 columns */
-.tracker-bottom{grid-column:1/-1;display:flex;align-items:center;gap:16px;padding:12px 18px;background:color-mix(in srgb,var(--ac,var(--c-blue)) 3%,transparent)}
+.tstat-card .tv{font-family:var(--fm);font-size:30px;font-weight:700;line-height:1}
+.tstat-card .tl{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:var(--txt3);margin-top:2px}
+.tstat-card.total .tv{color:var(--ac,var(--c-blue))}.tstat-card.done .tv{color:#10D98B}.tstat-card.rem .tv{color:#FFB830}
+.tstat-card .tind{width:24px;height:3px;border-radius:2px;margin-top:6px;background:currentColor;opacity:.22}
+.tstat-card.total .tind{color:var(--ac,var(--c-blue))}.tstat-card.done .tind{color:#10D98B}.tstat-card.rem .tind{color:#FFB830}
+.tracker-bottom{grid-column:1/-1;display:flex;align-items:center;gap:16px;padding:12px 18px;background:color-mix(in srgb,var(--ac,var(--c-blue)) 4%,transparent)}
 .tprog{flex:1;display:flex;flex-direction:column;gap:5px}
 .tprog-lbl{display:flex;justify-content:space-between;font-size:11.5px;color:var(--txt3);font-weight:500}
-.tprog-lbl .rem{color:var(--ac,var(--c-blue));font-weight:600}
-.pbar-wrap{height:7px;background:var(--border);border-radius:6px;overflow:hidden}
-.pbar{height:100%;border-radius:6px;background:linear-gradient(90deg,var(--ac,var(--c-blue)),color-mix(in srgb,var(--ac,var(--c-blue)) 55%,#10B981));transition:width .6s cubic-bezier(.4,0,.2,1)}
+.tprog-lbl .rem{color:var(--ac,var(--c-blue));font-weight:700}
+.pbar-wrap{height:6px;background:var(--border);border-radius:6px;overflow:hidden}
+.pbar{height:100%;border-radius:6px;background:linear-gradient(90deg,var(--ac,var(--c-blue)),color-mix(in srgb,var(--ac,var(--c-blue)) 55%,#10D98B));transition:width .7s cubic-bezier(.4,0,.2,1)}
 .tgt-wrap{display:flex;align-items:center;gap:7px;flex-shrink:0}
-.tgt-wrap label{font-size:11px;color:var(--txt3);font-weight:700;white-space:nowrap;text-transform:uppercase;letter-spacing:.04em}
-.tgt-inp{width:64px;padding:5px 8px;font-size:13px;font-weight:700;border-radius:7px;text-align:center;font-family:var(--fm)}
-.tgt-save{padding:5px 12px;border-radius:7px;background:color-mix(in srgb,var(--ac,var(--c-blue)) 14%,transparent);color:var(--ac,var(--c-blue));border:1px solid color-mix(in srgb,var(--ac,var(--c-blue)) 28%,transparent);font-size:12px;font-weight:600;cursor:pointer;transition:var(--tr)}
+.tgt-wrap label{font-size:10px;color:var(--txt3);font-weight:800;white-space:nowrap;text-transform:uppercase;letter-spacing:.06em}
+.tgt-inp{width:66px;padding:5px 8px;font-size:13px;font-weight:700;border-radius:8px;text-align:center;font-family:var(--fm)}
+.tgt-save{padding:5px 12px;border-radius:8px;background:color-mix(in srgb,var(--ac,var(--c-blue)) 14%,transparent);color:var(--ac,var(--c-blue));border:1px solid color-mix(in srgb,var(--ac,var(--c-blue)) 28%,transparent);font-size:11.5px;font-weight:700;cursor:pointer;transition:var(--tr)}
 .tgt-save:hover{background:color-mix(in srgb,var(--ac,var(--c-blue)) 24%,transparent)}
 
 /* TABLE */
 .tcard{background:var(--card);border:1px solid var(--border);border-radius:12px;overflow:hidden;box-shadow:var(--shadow)}
-.tcard-top{height:3px;background:linear-gradient(90deg,var(--ac,var(--c-blue)),color-mix(in srgb,var(--ac,var(--c-blue)) 30%,transparent))}
+.tcard-top{height:3px;background:linear-gradient(90deg,var(--ac,var(--c-blue)),color-mix(in srgb,var(--ac,var(--c-blue)) 22%,transparent))}
 .twrap{overflow-x:auto}
-table{width:100%;border-collapse:collapse;font-size:13px;min-width:560px}
+table{width:100%;border-collapse:collapse;font-size:13px;min-width:520px}
 thead tr{background:color-mix(in srgb,var(--ac,var(--c-blue)) 5%,var(--card))}
-th{padding:10px 14px;text-align:left;font-size:10.5px;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:var(--txt3);border-bottom:1px solid var(--border);white-space:nowrap}
-td{padding:10px 14px;border-bottom:1px solid var(--border);color:var(--txt);vertical-align:middle}
+th{padding:10px 14px;text-align:left;font-size:9.5px;font-weight:800;text-transform:uppercase;letter-spacing:.09em;color:var(--txt3);border-bottom:1px solid var(--border);white-space:nowrap}
+td{padding:11px 14px;border-bottom:1px solid color-mix(in srgb,var(--border) 55%,transparent);color:var(--txt);vertical-align:middle}
 tbody tr:last-child td{border-bottom:none}
-tbody tr:hover{background:color-mix(in srgb,var(--ac,var(--c-blue)) 3%,transparent)}
+tbody tr{transition:background .15s}
+tbody tr:hover{background:color-mix(in srgb,var(--ac,var(--c-blue)) 4%,transparent)}
 .td-acts{display:flex;gap:5px;align-items:center}
 .td-cmt{max-width:175px;font-size:12px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .has-cmt td:first-child{border-left:3px solid var(--ac,var(--c-blue))}
-.t-empty{text-align:center;padding:48px 20px;color:var(--txt3)}
-.t-empty .ei{font-size:34px;margin-bottom:12px;opacity:.35}
-.t-empty p{font-size:13.5px;line-height:1.6}
+.t-empty{text-align:center;padding:52px 20px;color:var(--txt3)}
+.t-empty .ei{font-size:40px;margin-bottom:14px;opacity:.25}
+.t-empty p{font-size:13.5px;line-height:1.7}
 
-/* QUICK-ADD FORM */
-.qadd{background:var(--card2);border:1px solid var(--border);border-radius:12px;padding:18px 20px;margin-bottom:14px}
-.qadd-title{font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--txt3);margin-bottom:14px;display:flex;align-items:center;gap:7px}
-.qadd-title::before{content:'';width:3px;height:13px;border-radius:2px;background:var(--ac,var(--c-blue))}
+/* QUICK ADD */
+.qadd{background:var(--card2);border:1px solid var(--border);border-left:3px solid var(--ac,var(--c-blue));border-radius:12px;padding:20px 22px;margin-bottom:16px}
+.qadd-title{font-size:11.5px;font-weight:800;text-transform:uppercase;letter-spacing:.08em;color:var(--ac,var(--c-blue));margin-bottom:16px}
 .aform{display:flex;flex-direction:column;gap:12px}
-.cmt-field{background:color-mix(in srgb,var(--ac,var(--c-blue)) 4%,var(--input-bg))!important;border:1px dashed color-mix(in srgb,var(--ac,var(--c-blue)) 28%,transparent)!important;font-style:italic}
+.cmt-field{background:color-mix(in srgb,var(--ac,var(--c-blue)) 5%,var(--input-bg))!important;border:1px dashed color-mix(in srgb,var(--ac,var(--c-blue)) 30%,transparent)!important}
 
-/* HOME */
-.welcome{background:linear-gradient(135deg,color-mix(in srgb,var(--c-blue) 9%,var(--card2)),var(--card2));border:1px solid var(--border);border-radius:16px;padding:26px 30px;margin-bottom:20px;position:relative;overflow:hidden}
-.welcome::after{content:'🏢';position:absolute;right:24px;top:50%;transform:translateY(-50%);font-size:62px;opacity:.06;pointer-events:none}
-.w-date{font-size:12px;color:var(--txt3);margin-bottom:5px;font-family:var(--fm)}
-.w-greet{font-size:23px;font-weight:700;margin-bottom:3px;letter-spacing:-.02em}
+/* ═══════════════════════════════════════
+   DASHBOARD
+═══════════════════════════════════════ */
+.welcome{background:linear-gradient(135deg,color-mix(in srgb,var(--c-blue) 10%,var(--card2)),var(--card2));border:1px solid var(--border);border-radius:16px;padding:28px 32px;margin-bottom:20px;position:relative;overflow:hidden}
+.welcome::before{content:'';position:absolute;right:-30px;top:-30px;width:220px;height:220px;background:radial-gradient(circle,color-mix(in srgb,var(--c-blue) 18%,transparent),transparent 70%);pointer-events:none}
+.w-date{font-family:var(--fm);font-size:11px;color:var(--txt3);margin-bottom:6px;letter-spacing:.04em}
+.w-greet{font-family:var(--fh);font-size:26px;font-weight:800;margin-bottom:4px;letter-spacing:-.03em}
 .w-sub{font-size:13.5px;color:var(--txt2)}
+
+/* Stat Cards */
 .stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(148px,1fr));gap:12px;margin-bottom:22px}
-.sc{background:var(--card2);border:1px solid var(--border);border-radius:12px;padding:17px 18px;position:relative;overflow:hidden;transition:var(--tr)}
-.sc:hover{border-color:color-mix(in srgb,var(--sc,var(--c-blue)) 40%,transparent);transform:translateY(-1px)}
-.sc::after{content:var(--si,'📊');position:absolute;right:10px;bottom:6px;font-size:28px;opacity:.1;pointer-events:none}
-.sv{font-family:var(--fm);font-size:28px;font-weight:700;color:var(--sc,var(--c-blue))}
+.sc{background:var(--card2);border:1px solid var(--border);border-radius:12px;padding:16px 18px;position:relative;overflow:hidden;transition:var(--tr);cursor:pointer}
+.sc:hover{border-color:color-mix(in srgb,var(--sc,var(--c-blue)) 55%,transparent);transform:translateY(-3px);box-shadow:0 10px 26px color-mix(in srgb,var(--sc,var(--c-blue)) 16%,transparent)}
+.sc::after{content:var(--si,'📊');position:absolute;right:10px;bottom:6px;font-size:32px;opacity:.08;pointer-events:none;transition:opacity .2s,transform .2s}
+.sc:hover::after{opacity:.15;transform:scale(1.1) rotate(-6deg)}
+.sc-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px}
+.sc-ico{width:30px;height:30px;border-radius:8px;background:color-mix(in srgb,var(--sc,var(--c-blue)) 14%,transparent);display:flex;align-items:center;justify-content:center;font-size:14px}
+.sc-arr{font-size:13px;color:var(--txt3);transition:var(--tr)}
+.sc:hover .sc-arr{color:var(--sc,var(--c-blue));transform:translateX(3px)}
+.sv{font-family:var(--fm);font-size:30px;font-weight:700;color:var(--sc,var(--c-blue));line-height:1}
 .sl{font-size:11.5px;color:var(--txt3);margin-top:4px;font-weight:500}
+
+/* Dashboard bottom grid */
+.dash-bottom{display:grid;grid-template-columns:1.25fr 1fr;gap:16px;margin-top:4px}
+
+/* Calendar */
+.cal-card{background:var(--card2);border:1px solid var(--border);border-radius:14px;padding:20px}
+.cal-hd{display:flex;align-items:center;justify-content:space-between;margin-bottom:16px}
+.cal-hd-title{font-family:var(--fh);font-size:14px;font-weight:700}
+.cal-nav-row{display:flex;align-items:center;gap:8px}
+.cal-month-lbl{font-family:var(--fm);font-size:11.5px;color:var(--txt2);font-weight:400;min-width:90px;text-align:center}
+.cal-nav-btn{width:26px;height:26px;border-radius:7px;background:var(--card);border:1px solid var(--border);color:var(--txt2);font-size:14px;display:flex;align-items:center;justify-content:center;cursor:pointer;transition:var(--tr)}
+.cal-nav-btn:hover{border-color:var(--c-blue);color:var(--c-blue)}
+.cal-days-hd{display:grid;grid-template-columns:repeat(7,1fr);gap:2px;margin-bottom:4px}
+.cal-day-hd{text-align:center;font-size:9px;font-weight:800;text-transform:uppercase;letter-spacing:.05em;color:var(--txt3);padding:4px 0}
+.cal-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:3px}
+.cal-cell{aspect-ratio:1;border-radius:7px;display:flex;flex-direction:column;align-items:center;justify-content:center;font-size:11px;font-weight:600;font-family:var(--fm);cursor:pointer;transition:var(--tr);position:relative;gap:2px;color:var(--txt2);background:transparent;border:1px solid transparent;min-height:30px}
+.cal-cell:hover:not(.cal-empty):not(.cal-wkend){background:color-mix(in srgb,var(--c-blue) 10%,transparent);border-color:color-mix(in srgb,var(--c-blue) 25%,transparent);color:var(--txt)}
+.cal-cell.cal-today{background:color-mix(in srgb,var(--c-blue) 14%,transparent);border-color:color-mix(in srgb,var(--c-blue) 45%,transparent);color:var(--c-blue);font-weight:800}
+.cal-cell.cal-empty,.cal-cell.cal-wkend{cursor:default;color:var(--txt3)}
+.cal-status-dot{width:4px;height:4px;border-radius:50%;flex-shrink:0}
+.cal-legend{display:flex;flex-wrap:wrap;gap:8px;margin-top:14px;padding-top:12px;border-top:1px solid var(--border)}
+.cl-item{display:flex;align-items:center;gap:4px;font-size:10px;color:var(--txt3);font-weight:600}
+.cl-dot{width:7px;height:7px;border-radius:50%;flex-shrink:0}
+
+/* Today Status */
+.today-card{background:var(--card2);border:1px solid var(--border);border-radius:14px;padding:20px;display:flex;flex-direction:column;gap:16px}
+.today-card-title{font-family:var(--fh);font-size:14px;font-weight:700}
+.ts-lbl{font-size:10px;font-weight:800;text-transform:uppercase;letter-spacing:.08em;color:var(--txt3);margin-bottom:8px}
+.ts-grid{display:grid;grid-template-columns:1fr 1fr;gap:6px}
+.ts-btn{padding:9px 6px;border-radius:9px;border:1px solid var(--border);background:var(--card);color:var(--txt2);font-size:11px;font-weight:600;cursor:pointer;transition:var(--tr);text-align:center;display:flex;flex-direction:column;align-items:center;gap:3px;line-height:1.3}
+.ts-btn span.icon{font-size:18px}
+.ts-btn:hover{border-color:var(--c-blue);color:var(--c-blue);background:color-mix(in srgb,var(--c-blue) 7%,var(--card))}
+.ts-btn.active{border-color:var(--tsC,var(--c-blue));color:var(--tsC,var(--c-blue));background:color-mix(in srgb,var(--tsC,var(--c-blue)) 13%,var(--card))}
+.today-cur{display:flex;align-items:center;gap:8px;padding:10px 12px;border-radius:9px;background:var(--card);border:1px solid var(--border);font-size:12.5px;font-weight:600}
+.today-cur-dot{width:8px;height:8px;border-radius:50%;background:var(--txt3);flex-shrink:0}
+.today-sum{border-top:1px solid var(--border);padding-top:14px}
+.today-sum-lbl{font-size:10px;font-weight:800;text-transform:uppercase;letter-spacing:.07em;color:var(--txt3);margin-bottom:8px}
+.today-sum-row{display:flex;align-items:center;justify-content:space-between;padding:5px 0;font-size:12px;border-bottom:1px solid color-mix(in srgb,var(--border) 50%,transparent)}
+.today-sum-row:last-child{border-bottom:none}
+.today-sum-name{color:var(--txt2)}
+.today-sum-count{font-family:var(--fm);font-weight:700;font-size:13px}
+.dash-actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:6px}
+
+/* Calendar Day Modal */
+.cday-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.cday-btn{padding:12px 8px;border-radius:10px;border:1px solid var(--border);background:var(--card);color:var(--txt2);font-size:12px;font-weight:600;cursor:pointer;transition:var(--tr);text-align:center;display:flex;flex-direction:column;align-items:center;gap:5px}
+.cday-btn:hover{border-color:var(--cbC,var(--c-blue));color:var(--cbC,var(--c-blue));background:color-mix(in srgb,var(--cbC,var(--c-blue)) 10%,var(--card))}
+.cday-btn.sel{border-color:var(--cbC,var(--c-blue));color:var(--cbC,var(--c-blue));background:color-mix(in srgb,var(--cbC,var(--c-blue)) 15%,var(--card))}
+.cday-btn .cbi{font-size:22px}
+.cday-btn .cbl{font-size:11px}
+.cday-clear{width:100%;margin-top:8px;padding:8px;border-radius:8px;border:1px dashed var(--border);background:transparent;color:var(--txt3);font-size:12px;font-weight:600;cursor:pointer;transition:var(--tr)}
+.cday-clear:hover{border-color:#F87171;color:#F87171}
 
 /* SETTINGS */
 .scard{background:var(--card2);border:1px solid var(--border);border-radius:12px;padding:20px 22px;margin-bottom:14px}
-.scard-title{font-size:14px;font-weight:700;margin-bottom:16px;display:flex;align-items:center;gap:8px}
+.scard-title{font-family:var(--fh);font-size:14px;font-weight:700;margin-bottom:16px;display:flex;align-items:center;gap:8px}
 
 /* RESPONSIVE */
-@media(max-width:768px){
-  .sidebar{width:195px;transform:translateX(-100%);transition:transform .22s ease}
-  .sidebar.open{transform:none}
-  .content{margin-left:0}
-  .panel{padding:16px 14px 40px}
-  .g2,.g3{grid-template-columns:1fr}
-  .tracker-bottom{flex-direction:column;align-items:flex-start}
+@media(max-width:900px){
+  .sidebar{transform:translateX(-240px);width:240px!important;transition:transform .22s ease,width 0s}
+  .sidebar.mob-open{transform:none}
+  .content{margin-left:0!important}
+  .panel{padding:18px 16px 50px}
+  .dash-bottom{grid-template-columns:1fr}
+  #mob-btn{display:flex!important}
+  .s-col-btn{display:none}
 }
-@media(max-width:480px){
+@media(max-width:600px){
+  .g2,.g3{grid-template-columns:1fr}
   .tracker{grid-template-columns:1fr}
   .tstat-card:not(:last-child){border-right:none;border-bottom:1px solid var(--border)}
+  .tracker-bottom{flex-direction:column;align-items:flex-start}
+  .stats{grid-template-columns:1fr 1fr}
+  .ts-grid{grid-template-columns:repeat(3,1fr)}
+  .welcome{padding:20px}
+  .w-greet{font-size:20px}
 }
 </style>
 </head>
@@ -243,15 +336,12 @@ tbody tr:hover{background:color-mix(in srgb,var(--ac,var(--c-blue)) 3%,transpare
     <div class="llogo">🏢</div>
     <div class="ltitle">Activity Dashboard</div>
     <div class="lsub">Enter your PIN to continue</div>
-    <div class="pdots">
-      <div class="pdot" id="d0"></div><div class="pdot" id="d1"></div>
-      <div class="pdot" id="d2"></div><div class="pdot" id="d3"></div>
-    </div>
+    <div class="pdots"><div class="pdot" id="d0"></div><div class="pdot" id="d1"></div><div class="pdot" id="d2"></div><div class="pdot" id="d3"></div></div>
     <div class="ppad">
       <button class="pkey" onclick="pk('1')">1</button><button class="pkey" onclick="pk('2')">2</button><button class="pkey" onclick="pk('3')">3</button>
       <button class="pkey" onclick="pk('4')">4</button><button class="pkey" onclick="pk('5')">5</button><button class="pkey" onclick="pk('6')">6</button>
       <button class="pkey" onclick="pk('7')">7</button><button class="pkey" onclick="pk('8')">8</button><button class="pkey" onclick="pk('9')">9</button>
-      <button class="pkey" onclick="pd()">⌫</button><button class="pkey" onclick="pk('0')">0</button><button class="pkey go" onclick="ps()">✓</button>
+      <button class="pkey" onclick="pdel()">⌫</button><button class="pkey" onclick="pk('0')">0</button><button class="pkey go" onclick="ps()">✓</button>
     </div>
     <div class="perr" id="perr"></div>
     <div style="margin-top:14px;font-size:11.5px;color:var(--txt3)">Default PIN: <strong>1234</strong> · Change in Settings</div>
@@ -265,7 +355,7 @@ tbody tr:hover{background:color-mix(in srgb,var(--ac,var(--c-blue)) 3%,transpare
 
   <!-- TOPBAR -->
   <div class="topbar">
-    <button class="ico-btn" id="mob-btn" onclick="toggleSidebar()" style="display:none">☰</button>
+    <button class="ico-btn" id="mob-btn" onclick="toggleMob()">☰</button>
     <div class="brand"><div class="brand-ico">🏢</div>Activity Dashboard</div>
     <div class="top-sp"></div>
     <div class="sync-pill" id="spill" onclick="syncAll()" title="Click to sync">
@@ -277,24 +367,28 @@ tbody tr:hover{background:color-mix(in srgb,var(--ac,var(--c-blue)) 3%,transpare
 
   <!-- SIDEBAR -->
   <div class="sidebar" id="sidebar">
-    <div class="slbl">Navigation</div>
-    <div class="nav on" onclick="go('home',this)" style="--nc:var(--c-blue)"><div class="ndot"></div>Dashboard</div>
+    <div class="s-top">
+      <span class="s-brand-mini">Navigation</span>
+      <button class="s-col-btn" id="scolbtn" onclick="toggleCollapse()" title="Collapse sidebar">◀</button>
+    </div>
+    <div class="nav on" id="nav-home"    onclick="go('home',this)"     style="--nc:var(--c-blue)"><div class="nav-ico">🏠</div><div class="nav-lbl">Dashboard</div><div class="nav-tip">Dashboard</div></div>
     <div class="div-line"></div>
     <div class="slbl">Work Tables</div>
-    <div class="nav" onclick="go('daily',this)"  style="--nc:var(--c-blue)"><div class="ndot"></div>Daily Work Logs</div>
-    <div class="nav" onclick="go('post',this)"   style="--nc:var(--c-orange)"><div class="ndot"></div>Post Sales Tickets</div>
-    <div class="nav" onclick="go('pre',this)"    style="--nc:var(--c-green)"><div class="ndot"></div>Pre Sales Activities</div>
-    <div class="nav" onclick="go('app',this)"    style="--nc:var(--c-purple)"><div class="ndot"></div>App Development</div>
-    <div class="nav" onclick="go('learn',this)"  style="--nc:var(--c-cyan)"><div class="ndot"></div>Learning Logs</div>
+    <div class="nav" id="nav-daily"   onclick="go('daily',this)"   style="--nc:var(--c-blue)"><div class="nav-ico">📋</div><div class="nav-lbl">Daily Work Logs</div><div class="nav-tip">Daily Work Logs</div></div>
+    <div class="nav" id="nav-post"    onclick="go('post',this)"    style="--nc:var(--c-orange)"><div class="nav-ico">🎫</div><div class="nav-lbl">Post Sales Tickets</div><div class="nav-tip">Post Sales Tickets</div></div>
+    <div class="nav" id="nav-pre"     onclick="go('pre',this)"     style="--nc:var(--c-green)"><div class="nav-ico">🤝</div><div class="nav-lbl">Pre Sales Activities</div><div class="nav-tip">Pre Sales</div></div>
+    <div class="nav" id="nav-app"     onclick="go('app',this)"     style="--nc:var(--c-purple)"><div class="nav-ico">💻</div><div class="nav-lbl">App Development</div><div class="nav-tip">App Development</div></div>
+    <div class="nav" id="nav-learn"   onclick="go('learn',this)"   style="--nc:var(--c-cyan)"><div class="nav-ico">🎓</div><div class="nav-lbl">Learning Logs</div><div class="nav-tip">Learning Logs</div></div>
+    <div class="nav" id="nav-docs"    onclick="go('docs',this)"    style="--nc:var(--c-teal)"><div class="nav-ico">📄</div><div class="nav-lbl">Documents</div><div class="nav-tip">Documents</div></div>
     <div class="div-line"></div>
     <div class="slbl">System</div>
-    <div class="nav" onclick="go('settings',this)" style="--nc:var(--c-amber)"><div class="ndot"></div>Settings</div>
+    <div class="nav" id="nav-settings" onclick="go('settings',this)" style="--nc:var(--c-amber)"><div class="nav-ico">⚙️</div><div class="nav-lbl">Settings</div><div class="nav-tip">Settings</div></div>
   </div>
 
   <!-- CONTENT -->
-  <div class="content">
+  <div class="content" id="content">
 
-    <!-- HOME -->
+    <!-- ══ HOME ══ -->
     <div id="sec-home" class="panel on" style="--ac:var(--c-blue)">
       <div class="welcome">
         <div class="w-date" id="h-date"></div>
@@ -302,25 +396,97 @@ tbody tr:hover{background:color-mix(in srgb,var(--ac,var(--c-blue)) 3%,transpare
         <div class="w-sub">Your complete work activity overview — all in one place.</div>
       </div>
       <div class="stats">
-        <div class="sc" style="--sc:var(--c-blue);--si:'📋'"><div class="sv" id="st-daily">—</div><div class="sl">Daily Work Entries</div></div>
-        <div class="sc" style="--sc:var(--c-orange);--si:'🎫'"><div class="sv" id="st-post">—</div><div class="sl">Post Sales Tickets</div></div>
-        <div class="sc" style="--sc:var(--c-green);--si:'🤝'"><div class="sv" id="st-pre">—</div><div class="sl">Pre Sales Activities</div></div>
-        <div class="sc" style="--sc:var(--c-purple);--si:'💻'"><div class="sv" id="st-app">—</div><div class="sl">Applications Tracked</div></div>
-        <div class="sc" style="--sc:var(--c-cyan);--si:'🎓'"><div class="sv" id="st-learn">—</div><div class="sl">Learning Topics</div></div>
+        <div class="sc" style="--sc:var(--c-blue);--si:'📋'" onclick="go('daily',document.getElementById('nav-daily'))">
+          <div class="sc-top"><div class="sc-ico">📋</div><div class="sc-arr">→</div></div>
+          <div class="sv" id="st-daily">—</div><div class="sl">Daily Work Entries</div>
+        </div>
+        <div class="sc" style="--sc:var(--c-orange);--si:'🎫'" onclick="go('post',document.getElementById('nav-post'))">
+          <div class="sc-top"><div class="sc-ico">🎫</div><div class="sc-arr">→</div></div>
+          <div class="sv" id="st-post">—</div><div class="sl">Post Sales Tickets</div>
+        </div>
+        <div class="sc" style="--sc:var(--c-green);--si:'🤝'" onclick="go('pre',document.getElementById('nav-pre'))">
+          <div class="sc-top"><div class="sc-ico">🤝</div><div class="sc-arr">→</div></div>
+          <div class="sv" id="st-pre">—</div><div class="sl">Pre Sales Activities</div>
+        </div>
+        <div class="sc" style="--sc:var(--c-purple);--si:'💻'" onclick="go('app',document.getElementById('nav-app'))">
+          <div class="sc-top"><div class="sc-ico">💻</div><div class="sc-arr">→</div></div>
+          <div class="sv" id="st-app">—</div><div class="sl">Applications Tracked</div>
+        </div>
+        <div class="sc" style="--sc:var(--c-cyan);--si:'🎓'" onclick="go('learn',document.getElementById('nav-learn'))">
+          <div class="sc-top"><div class="sc-ico">🎓</div><div class="sc-arr">→</div></div>
+          <div class="sv" id="st-learn">—</div><div class="sl">Learning Topics</div>
+        </div>
+        <div class="sc" style="--sc:var(--c-teal);--si:'📄'" onclick="go('docs',document.getElementById('nav-docs'))">
+          <div class="sc-top"><div class="sc-ico">📄</div><div class="sc-arr">→</div></div>
+          <div class="sv" id="st-docs">—</div><div class="sl">Documents</div>
+        </div>
       </div>
-      <div style="display:flex;gap:10px;flex-wrap:wrap">
-        <button class="btn btn-p" onclick="go('daily',document.querySelector('[onclick*=daily]'))">+ Add Today's Work</button>
+
+      <div class="dash-bottom">
+        <!-- Calendar -->
+        <div class="cal-card">
+          <div class="cal-hd">
+            <div class="cal-hd-title">📅 Attendance Calendar</div>
+            <div class="cal-nav-row">
+              <button class="cal-nav-btn" onclick="calNav(-1)">‹</button>
+              <span class="cal-month-lbl" id="cal-title"></span>
+              <button class="cal-nav-btn" onclick="calNav(1)">›</button>
+            </div>
+          </div>
+          <div class="cal-days-hd">
+            <div class="cal-day-hd">Mon</div><div class="cal-day-hd">Tue</div>
+            <div class="cal-day-hd">Wed</div><div class="cal-day-hd">Thu</div>
+            <div class="cal-day-hd">Fri</div>
+            <div class="cal-day-hd" style="color:#F87171">Sat</div>
+            <div class="cal-day-hd" style="color:#F87171">Sun</div>
+          </div>
+          <div class="cal-grid" id="cal-grid"></div>
+          <div class="cal-legend">
+            <span class="cl-item"><span class="cl-dot" style="background:#10D98B"></span>Present</span>
+            <span class="cl-item"><span class="cl-dot" style="background:#0DD9F5"></span>WFH</span>
+            <span class="cl-item"><span class="cl-dot" style="background:#FFB830"></span>Leave</span>
+            <span class="cl-item"><span class="cl-dot" style="background:#4A9EFF"></span>Holiday</span>
+            <span class="cl-item"><span class="cl-dot" style="background:#B06EFF"></span>Customer</span>
+            <span class="cl-item"><span class="cl-dot" style="background:#FF7A35"></span>Half Day</span>
+          </div>
+        </div>
+
+        <!-- Today Status + Summary -->
+        <div class="today-card">
+          <div class="today-card-title">Today's Status</div>
+          <div>
+            <div class="ts-lbl">How was today?</div>
+            <div class="ts-grid">
+              <button class="ts-btn" style="--tsC:#10D98B" onclick="setTodayStatus('Present','#10D98B',this)"><span class="icon">🏢</span>Present</button>
+              <button class="ts-btn" style="--tsC:#0DD9F5" onclick="setTodayStatus('WFH','#0DD9F5',this)"><span class="icon">🏠</span>WFH</button>
+              <button class="ts-btn" style="--tsC:#FFB830" onclick="setTodayStatus('Leave','#FFB830',this)"><span class="icon">🌴</span>Leave</button>
+              <button class="ts-btn" style="--tsC:#4A9EFF" onclick="setTodayStatus('Holiday','#4A9EFF',this)"><span class="icon">🎉</span>Holiday</button>
+              <button class="ts-btn" style="--tsC:#B06EFF" onclick="setTodayStatus('Customer Visit','#B06EFF',this)"><span class="icon">🚗</span>Customer</button>
+              <button class="ts-btn" style="--tsC:#FF7A35" onclick="setTodayStatus('Half Day','#FF7A35',this)"><span class="icon">⏰</span>Half Day</button>
+            </div>
+          </div>
+          <div class="today-cur" id="today-cur-wrap" style="display:none">
+            <div class="today-cur-dot" id="today-cur-dot"></div>
+            <span id="today-cur-lbl">Not set</span>
+            <span style="flex:1"></span>
+            <button class="btn btn-g btn-sm" onclick="clearTodayStatus()" style="padding:3px 9px;font-size:11px">Clear</button>
+          </div>
+          <div class="today-sum">
+            <div class="today-sum-lbl">Today's Activity</div>
+            <div class="today-sum-rows" id="today-sum"></div>
+          </div>
+        </div>
+      </div>
+      <div class="dash-actions" style="margin-top:16px">
+        <button class="btn btn-p" onclick="go('daily',document.getElementById('nav-daily'))">+ Add Today's Work</button>
         <button class="btn btn-g" onclick="syncAll()">🔄 Refresh All</button>
       </div>
     </div>
 
-    <!-- TABLE 1: DAILY WORK LOGS -->
+    <!-- ══ TABLE 1: DAILY WORK LOGS ══ -->
     <div id="sec-daily" class="panel" style="--ac:var(--c-blue)">
       <div class="sec-hd">
-        <div class="sec-title">
-          <div class="sec-ico">📋</div>
-          <div><h2>Daily Work Logs</h2><p>Track your daily tasks and progress</p></div>
-        </div>
+        <div class="sec-title"><div class="sec-ico">📋</div><div><h2>Daily Work Logs</h2><p>Track your daily tasks and progress</p></div></div>
         <div class="sec-acts">
           <button class="btn btn-csv btn-sm" onclick="dlCSV('daily')">⬇ CSV</button>
           <button class="btn btn-g btn-sm" onclick="loadDaily()">🔄 Refresh</button>
@@ -355,34 +521,29 @@ tbody tr:hover{background:color-mix(in srgb,var(--ac,var(--c-blue)) 3%,transpare
       </div>
       <div class="tcard"><div class="tcard-top"></div>
         <div class="twrap"><table>
-          <!-- FIX 1: Removed S.No (#) column from Daily Work Logs -->
           <thead><tr><th>Date</th><th>Day</th><th>Task / Work Done</th><th>Status</th><th>💬 Comments</th><th>Actions</th></tr></thead>
           <tbody id="tb-daily"></tbody>
         </table></div>
       </div>
     </div>
 
-    <!-- TABLE 2: POST SALES TICKETS -->
+    <!-- ══ TABLE 2: POST SALES TICKETS ══ -->
     <div id="sec-post" class="panel" style="--ac:var(--c-orange)">
       <div class="sec-hd">
-        <div class="sec-title">
-          <div class="sec-ico">🎫</div>
-          <div><h2>Post Sales Tickets</h2><p>Track support tickets and resolution status</p></div>
-        </div>
+        <div class="sec-title"><div class="sec-ico">🎫</div><div><h2>Post Sales Tickets</h2><p>Track support tickets and resolution status</p></div></div>
         <div class="sec-acts">
           <button class="btn btn-csv btn-sm" onclick="dlCSV('post')">⬇ CSV</button>
           <button class="btn btn-g btn-sm" onclick="loadPost()">🔄 Refresh</button>
           <button class="btn btn-p" style="--ac:var(--c-orange)" onclick="tog('pf')">+ Add Ticket</button>
         </div>
       </div>
-      <!-- FIX 3: Tracker — Total=all, Completed=done statuses, Remaining=total-completed -->
       <div class="tracker" style="--ac:var(--c-orange)">
         <div class="tstat-card total"><div class="tv" id="tt-post-tot">0</div><div class="tl">Total</div><div class="tind"></div></div>
         <div class="tstat-card done"><div class="tv" id="tt-post-done">0</div><div class="tl">Completed</div><div class="tind"></div></div>
         <div class="tstat-card rem"><div class="tv" id="tt-post-rem">0</div><div class="tl">Remaining</div><div class="tind"></div></div>
         <div class="tracker-bottom">
           <div class="tprog">
-            <div class="tprog-lbl"><span id="tl-post-pct">0% of target</span><span class="rem" id="tl-post-rem"></span></div>
+            <div class="tprog-lbl"><span id="tl-post-pct">0%</span><span class="rem" id="tl-post-rem"></span></div>
             <div class="pbar-wrap"><div class="pbar" id="pb-post" style="width:0%"></div></div>
           </div>
           <div class="tgt-wrap">
@@ -418,20 +579,16 @@ tbody tr:hover{background:color-mix(in srgb,var(--ac,var(--c-blue)) 3%,transpare
       </div>
       <div class="tcard" style="--ac:var(--c-orange)"><div class="tcard-top"></div>
         <div class="twrap"><table>
-          <!-- FIX 1: Removed S.No (#) column -->
           <thead><tr><th>Ticket #</th><th>Description</th><th>Status</th><th>💬 Comments</th><th>Actions</th></tr></thead>
           <tbody id="tb-post"></tbody>
         </table></div>
       </div>
     </div>
 
-    <!-- TABLE 3: PRE SALES ACTIVITIES -->
+    <!-- ══ TABLE 3: PRE SALES ══ -->
     <div id="sec-pre" class="panel" style="--ac:var(--c-green)">
       <div class="sec-hd">
-        <div class="sec-title">
-          <div class="sec-ico">🤝</div>
-          <div><h2>Pre Sales Activities</h2><p>Log proposals, demos, and pre-sales work</p></div>
-        </div>
+        <div class="sec-title"><div class="sec-ico">🤝</div><div><h2>Pre Sales Activities</h2><p>Log proposals, demos, and pre-sales work</p></div></div>
         <div class="sec-acts">
           <button class="btn btn-csv btn-sm" onclick="dlCSV('pre')">⬇ CSV</button>
           <button class="btn btn-g btn-sm" onclick="loadPre()">🔄 Refresh</button>
@@ -444,7 +601,7 @@ tbody tr:hover{background:color-mix(in srgb,var(--ac,var(--c-blue)) 3%,transpare
         <div class="tstat-card rem"><div class="tv" id="tt-pre-rem">0</div><div class="tl">Remaining</div><div class="tind"></div></div>
         <div class="tracker-bottom">
           <div class="tprog">
-            <div class="tprog-lbl"><span id="tl-pre-pct">0% of target</span><span class="rem" id="tl-pre-rem"></span></div>
+            <div class="tprog-lbl"><span id="tl-pre-pct">0%</span><span class="rem" id="tl-pre-rem"></span></div>
             <div class="pbar-wrap"><div class="pbar" id="pb-pre" style="width:0%"></div></div>
           </div>
           <div class="tgt-wrap">
@@ -480,20 +637,16 @@ tbody tr:hover{background:color-mix(in srgb,var(--ac,var(--c-blue)) 3%,transpare
       </div>
       <div class="tcard" style="--ac:var(--c-green)"><div class="tcard-top"></div>
         <div class="twrap"><table>
-          <!-- FIX 1: Removed S.No (#) column -->
           <thead><tr><th>Project Name</th><th>Work Description</th><th>Status</th><th>💬 Comments</th><th>Actions</th></tr></thead>
           <tbody id="tb-pre"></tbody>
         </table></div>
       </div>
     </div>
 
-    <!-- TABLE 4: APP DEVELOPMENT -->
+    <!-- ══ TABLE 4: APP DEVELOPMENT ══ -->
     <div id="sec-app" class="panel" style="--ac:var(--c-purple)">
       <div class="sec-hd">
-        <div class="sec-title">
-          <div class="sec-ico">💻</div>
-          <div><h2>Application Development</h2><p>Catalogue of apps, purposes and repositories</p></div>
-        </div>
+        <div class="sec-title"><div class="sec-ico">💻</div><div><h2>Application Development</h2><p>Catalogue of apps, purposes and repositories</p></div></div>
         <div class="sec-acts">
           <button class="btn btn-csv btn-sm" onclick="dlCSV('app')">⬇ CSV</button>
           <button class="btn btn-g btn-sm" onclick="loadApp()">🔄 Refresh</button>
@@ -506,7 +659,7 @@ tbody tr:hover{background:color-mix(in srgb,var(--ac,var(--c-blue)) 3%,transpare
         <div class="tstat-card rem"><div class="tv" id="tt-app-rem">0</div><div class="tl">Remaining</div><div class="tind"></div></div>
         <div class="tracker-bottom">
           <div class="tprog">
-            <div class="tprog-lbl"><span id="tl-app-pct">0% of target</span><span class="rem" id="tl-app-rem"></span></div>
+            <div class="tprog-lbl"><span id="tl-app-pct">0%</span><span class="rem" id="tl-app-rem"></span></div>
             <div class="pbar-wrap"><div class="pbar" id="pb-app" style="width:0%"></div></div>
           </div>
           <div class="tgt-wrap">
@@ -516,7 +669,6 @@ tbody tr:hover{background:color-mix(in srgb,var(--ac,var(--c-blue)) 3%,transpare
           </div>
         </div>
       </div>
-      <!-- FIX 2: App Dev form now includes Status field -->
       <div class="qadd" id="af" style="display:none">
         <div class="qadd-title">New Application Entry</div>
         <div class="aform">
@@ -547,20 +699,16 @@ tbody tr:hover{background:color-mix(in srgb,var(--ac,var(--c-blue)) 3%,transpare
       </div>
       <div class="tcard" style="--ac:var(--c-purple)"><div class="tcard-top"></div>
         <div class="twrap"><table>
-          <!-- FIX 1: Removed S.No (#) column | FIX 2: Added Status column -->
           <thead><tr><th>Application Name</th><th>Purpose</th><th>Status</th><th>Location / Repo</th><th>💬 Comments</th><th>Actions</th></tr></thead>
           <tbody id="tb-app"></tbody>
         </table></div>
       </div>
     </div>
 
-    <!-- TABLE 5: LEARNING LOGS -->
+    <!-- ══ TABLE 5: LEARNING LOGS ══ -->
     <div id="sec-learn" class="panel" style="--ac:var(--c-cyan)">
       <div class="sec-hd">
-        <div class="sec-title">
-          <div class="sec-ico">🎓</div>
-          <div><h2>Learning Logs</h2><p>Track topics and skills you are studying</p></div>
-        </div>
+        <div class="sec-title"><div class="sec-ico">🎓</div><div><h2>Learning Logs</h2><p>Track topics and skills you are studying</p></div></div>
         <div class="sec-acts">
           <button class="btn btn-csv btn-sm" onclick="dlCSV('learn')">⬇ CSV</button>
           <button class="btn btn-g btn-sm" onclick="loadLearn()">🔄 Refresh</button>
@@ -573,7 +721,7 @@ tbody tr:hover{background:color-mix(in srgb,var(--ac,var(--c-blue)) 3%,transpare
         <div class="tstat-card rem"><div class="tv" id="tt-learn-rem">0</div><div class="tl">Remaining</div><div class="tind"></div></div>
         <div class="tracker-bottom">
           <div class="tprog">
-            <div class="tprog-lbl"><span id="tl-learn-pct">0% of target</span><span class="rem" id="tl-learn-rem"></span></div>
+            <div class="tprog-lbl"><span id="tl-learn-pct">0%</span><span class="rem" id="tl-learn-rem"></span></div>
             <div class="pbar-wrap"><div class="pbar" id="pb-learn" style="width:0%"></div></div>
           </div>
           <div class="tgt-wrap">
@@ -606,22 +754,78 @@ tbody tr:hover{background:color-mix(in srgb,var(--ac,var(--c-blue)) 3%,transpare
       </div>
       <div class="tcard" style="--ac:var(--c-cyan)"><div class="tcard-top"></div>
         <div class="twrap"><table>
-          <!-- FIX 1: Removed S.No (#) column -->
           <thead><tr><th>Topic / Concept</th><th>Status</th><th>💬 Comments</th><th>Actions</th></tr></thead>
           <tbody id="tb-learn"></tbody>
         </table></div>
       </div>
     </div>
 
-    <!-- SETTINGS -->
-    <div id="sec-settings" class="panel" style="--ac:var(--c-amber)">
+    <!-- ══ TABLE 6: DOCUMENTS (NEW) ══ -->
+    <div id="sec-docs" class="panel" style="--ac:var(--c-teal)">
       <div class="sec-hd">
-        <div class="sec-title">
-          <div class="sec-ico">⚙️</div>
-          <div><h2>Settings</h2><p>PIN, Google Sheet, and data export</p></div>
+        <div class="sec-title"><div class="sec-ico">📄</div><div><h2>Documents</h2><p>Track documents, reports, and deliverables</p></div></div>
+        <div class="sec-acts">
+          <button class="btn btn-csv btn-sm" onclick="dlCSV('docs')">⬇ CSV</button>
+          <button class="btn btn-g btn-sm" onclick="loadDocs()">🔄 Refresh</button>
+          <button class="btn btn-p" style="--ac:var(--c-teal)" onclick="tog('docf')">+ Add Document</button>
         </div>
       </div>
+      <div class="tracker" style="--ac:var(--c-teal)">
+        <div class="tstat-card total"><div class="tv" id="tt-docs-tot">0</div><div class="tl">Total</div><div class="tind"></div></div>
+        <div class="tstat-card done"><div class="tv" id="tt-docs-done">0</div><div class="tl">Completed</div><div class="tind"></div></div>
+        <div class="tstat-card rem"><div class="tv" id="tt-docs-rem">0</div><div class="tl">Remaining</div><div class="tind"></div></div>
+        <div class="tracker-bottom">
+          <div class="tprog">
+            <div class="tprog-lbl"><span id="tl-docs-pct">0%</span><span class="rem" id="tl-docs-rem"></span></div>
+            <div class="pbar-wrap"><div class="pbar" id="pb-docs" style="width:0%"></div></div>
+          </div>
+          <div class="tgt-wrap">
+            <label>Target</label>
+            <input type="number" class="tgt-inp" id="tgt-docs" min="0" placeholder="—" oninput="updTgt('DOCS','docs')"/>
+            <button class="tgt-save" onclick="saveTgt('DOCS','docs')">Save</button>
+          </div>
+        </div>
+      </div>
+      <div class="qadd" id="docf" style="display:none">
+        <div class="qadd-title">New Document Entry</div>
+        <div class="aform">
+          <div class="g2">
+            <div class="field"><label>Topic / Document Name</label><input id="ndoc-topic" placeholder="e.g. Q3 Sales Report"/></div>
+            <div class="field"><label>Purpose</label><input id="ndoc-purpose" placeholder="e.g. Monthly review for management"/></div>
+          </div>
+          <div class="g2">
+            <div class="field"><label>Date Completed</label><input type="date" id="ndoc-date"/></div>
+            <div class="field"><label>Status</label>
+              <select id="ndoc-status">
+                <option value="Draft">📝 Draft</option>
+                <option value="In Progress" selected>🔄 In Progress</option>
+                <option value="Under Review">🔍 Under Review</option>
+                <option value="Completed">✅ Completed</option>
+                <option value="Archived">📦 Archived</option>
+              </select>
+            </div>
+          </div>
+          <div class="field"><label>Location / Link / Path</label><input id="ndoc-loc" placeholder="e.g. SharePoint/Docs/Q3Report.xlsx or https://…"/></div>
+          <div class="field"><label>💬 Comments</label><input id="ndoc-cmt" class="cmt-field" placeholder="Notes or context…"/></div>
+          <div style="display:flex;gap:8px;justify-content:flex-end">
+            <button class="btn btn-g btn-sm" onclick="tog('docf')">Cancel</button>
+            <button class="btn btn-p btn-sm" style="--ac:var(--c-teal)" id="ndoc-btn" onclick="saveDocs()">Save Document</button>
+          </div>
+        </div>
+      </div>
+      <div class="tcard" style="--ac:var(--c-teal)"><div class="tcard-top"></div>
+        <div class="twrap"><table>
+          <thead><tr><th>Topic / Name</th><th>Purpose</th><th>Date Completed</th><th>Status</th><th>Location / Link</th><th>💬 Comments</th><th>Actions</th></tr></thead>
+          <tbody id="tb-docs"></tbody>
+        </table></div>
+      </div>
+    </div>
 
+    <!-- ══ SETTINGS ══ -->
+    <div id="sec-settings" class="panel" style="--ac:var(--c-amber)">
+      <div class="sec-hd">
+        <div class="sec-title"><div class="sec-ico">⚙️</div><div><h2>Settings</h2><p>PIN, Google Sheet, and data export</p></div></div>
+      </div>
       <div class="scard">
         <div class="scard-title">🔐 Change Login PIN <span style="font-size:11px;font-weight:400;color:var(--txt3);margin-left:auto">Min. 4 digits</span></div>
         <div class="g3" style="margin-bottom:14px">
@@ -631,7 +835,6 @@ tbody tr:hover{background:color-mix(in srgb,var(--ac,var(--c-blue)) 3%,transpare
         </div>
         <button class="btn btn-p" style="--ac:var(--c-amber)" onclick="changePin()">Update PIN</button>
       </div>
-
       <div class="scard">
         <div class="scard-title">📊 Linked Google Sheet</div>
         <div class="field" style="margin-bottom:14px">
@@ -640,31 +843,28 @@ tbody tr:hover{background:color-mix(in srgb,var(--ac,var(--c-blue)) 3%,transpare
         </div>
         <a id="open-sheet" href="#" target="_blank" class="btn btn-g btn-sm">📊 Open Google Sheet ↗</a>
       </div>
-
       <div class="scard">
         <div class="scard-title">⬇ Export Data as CSV</div>
-        <p style="font-size:13px;color:var(--txt2);margin-bottom:16px;line-height:1.7">Download any table as a .csv file — open directly in Excel, Google Sheets, or Numbers.</p>
+        <p style="font-size:13px;color:var(--txt2);margin-bottom:16px;line-height:1.7">Download any table as a .csv file — open directly in Excel or Google Sheets.</p>
         <div style="display:flex;gap:8px;flex-wrap:wrap">
           <button class="btn btn-csv btn-sm" onclick="dlCSV('daily')">📋 Daily Logs</button>
           <button class="btn btn-csv btn-sm" onclick="dlCSV('post')">🎫 Post Sales</button>
           <button class="btn btn-csv btn-sm" onclick="dlCSV('pre')">🤝 Pre Sales</button>
           <button class="btn btn-csv btn-sm" onclick="dlCSV('app')">💻 App Dev</button>
           <button class="btn btn-csv btn-sm" onclick="dlCSV('learn')">🎓 Learning</button>
-          <button class="btn btn-p btn-sm" style="--ac:var(--c-amber);margin-left:4px" onclick="dlAllCSV()">⬇ Download All Tables</button>
+          <button class="btn btn-csv btn-sm" onclick="dlCSV('docs')">📄 Documents</button>
+          <button class="btn btn-p btn-sm" style="--ac:var(--c-amber);margin-left:4px" onclick="dlAllCSV()">⬇ Download All</button>
         </div>
       </div>
     </div>
 
-  </div>
-</div>
+  </div><!-- /content -->
+</div><!-- /app -->
 
 <!-- EDIT MODAL -->
 <div class="mbg" id="emodal">
   <div class="modal">
-    <div class="modal-hd">
-      <h3 id="em-title">Edit Entry</h3>
-      <button onclick="cm()">✕</button>
-    </div>
+    <div class="modal-hd"><h3 id="em-title">Edit Entry</h3><button onclick="cm()">✕</button></div>
     <div class="modal-bd" id="em-body"></div>
     <div class="modal-ft">
       <button class="btn btn-g btn-sm" onclick="cm()">Cancel</button>
@@ -673,47 +873,70 @@ tbody tr:hover{background:color-mix(in srgb,var(--ac,var(--c-blue)) 3%,transpare
   </div>
 </div>
 
+<!-- CALENDAR DAY MODAL -->
+<div class="mbg" id="calmodal">
+  <div class="modal" style="max-width:340px">
+    <div class="modal-hd"><h3 id="cal-modal-title">Set Day Status</h3><button onclick="closeCalModal()">✕</button></div>
+    <div class="cday-grid" id="cal-modal-body"></div>
+    <button class="cday-clear" onclick="clearCalDay()">✕ Clear Status</button>
+  </div>
+</div>
+
 <script>
-/* ══════════════════════════════════════════════
-   SET THESE TWO VALUES BEFORE USE
-   ══════════════════════════════════════════════ */
-const GAS_URL   = 'https://script.google.com/macros/s/AKfycbz7ZsYoK4Bfafs0V9awNkRAVQgmkkgzkVZ-KvjGpL-FSZOLcIpR9Pc5c0rj7VVW2GXvKw/exec';// to change app_script_url
+/* ══════════════════════════════════════════
+   CONFIG — set GAS_URL before use
+══════════════════════════════════════════ */
+const GAS_URL   = 'https://script.google.com/macros/s/AKfycbz7ZsYoK4Bfafs0V9awNkRAVQgmkkgzkVZ-KvjGpL-FSZOLcIpR9Pc5c0rj7VVW2GXvKw/exec';
 const LOCAL_PIN = '1234';
 
-/* API */
+/* ── API ── */
 function gRun(fn,...args){
-  if(!GAS_URL)return Promise.reject(new Error('GAS_URL not set. Paste your Web App URL.'));
-  return fetch(GAS_URL,{method:'POST',headers:{'Content-Type':'text/plain'},body:JSON.stringify({fn,args})})
-    .then(r=>{if(!r.ok)throw new Error('HTTP '+r.status);return r.json();})
-    .then(res=>{if(res&&res.__error)throw new Error(res.__error);return res;});
+  if(!GAS_URL) return Promise.reject(new Error('GAS_URL not set.'));
+  return fetch(GAS_URL,{method:'POST',headers:{'Content-Type':'text/plain'},
+    body:JSON.stringify({fn,args})})
+    .then(r=>{if(!r.ok) throw new Error('HTTP '+r.status);return r.json();})
+    .then(res=>{if(res&&res.__error) throw new Error(res.__error);return res;});
 }
 
-/* STATE */
-const D={daily:[],post:[],pre:[],app:[],learn:[]};
-const TGT={POST:0,PRE:0,APP:0,LEARNING:0};
+/* ── STATE ── */
+const D={daily:[],post:[],pre:[],app:[],learn:[],docs:[]};
+const TGT={POST:0,PRE:0,APP:0,LEARNING:0,DOCS:0};
+let CAL_DATA={};        // { 'YYYY-MM-DD': statusString }
+let calYear,calMonth;   // displayed calendar month
+let calEditDate=null;   // date string being edited in modal
 let editCtx=null,syncing=false;
 
-/* UTILS */
+/* ── STATUS COLORS for Calendar ── */
+const CAL_COLORS={
+  'Present':'#10D98B','WFH':'#0DD9F5','Leave':'#FFB830',
+  'Holiday':'#4A9EFF','Customer Visit':'#B06EFF','Half Day':'#FF7A35'
+};
+
+/* ── UTILS ── */
 function toast(msg,type='inf',ms=3500){
   const icons={ok:'✅',err:'❌',inf:'ℹ️'};
   const el=document.createElement('div');el.className='toast '+type;
   el.innerHTML=(icons[type]||'')+' '+msg;
-  document.getElementById('toast-wrap').appendChild(el);setTimeout(()=>el.remove(),ms);
+  document.getElementById('toast-wrap').appendChild(el);
+  setTimeout(()=>el.remove(),ms);
 }
-function setBtn(id,on,lbl){const b=document.getElementById(id);if(!b)return;b.disabled=on;b.innerHTML=on?'<span class="spin"></span> '+lbl:lbl;}
+function setBtn(id,on,lbl){const b=$(id);if(!b)return;b.disabled=on;b.innerHTML=on?'<span class="spin"></span> '+lbl:lbl;}
 function esc(s){return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');}
-function val(id){const e=document.getElementById(id);return e?e.value.trim():'';}
+function val(id){const e=$(id);return e?e.value.trim():'';}
 function $(id){return document.getElementById(id);}
 function today(){return new Date().toLocaleDateString('en-IN',{day:'2-digit',month:'2-digit',year:'numeric'});}
 function todayDay(){return new Date().toLocaleDateString('en-IN',{weekday:'long'});}
+function todayISO(){const n=new Date();return `${n.getFullYear()}-${String(n.getMonth()+1).padStart(2,'0')}-${String(n.getDate()).padStart(2,'0')}`;}
+
 function badge(s){
-  const m={'completed':'b-done','resolved':'b-done','won':'b-done','closed':'b-done',
-    'in progress':'b-prog','proposal sent':'b-prog','demo scheduled':'b-prog','testing':'b-prog',
+  const m={
+    'completed':'b-done','resolved':'b-done','won':'b-done','closed':'b-done',
+    'in progress':'b-prog','proposal sent':'b-prog','demo scheduled':'b-prog','testing':'b-prog','draft':'b-prog',
     'pending':'b-pend','not started':'b-pend','escalated':'b-pend','lost':'b-pend','planning':'b-pend',
     'blocked':'b-blok','open':'b-open',
-    'under review':'b-revw','follow up':'b-revw','important':'b-revw',
-    'on hold':'b-arch','cancelled':'b-arch','archived':'b-arch','revisit':'b-arch','needs revisit':'b-arch',
-    'active':'b-done'};
+    'under review':'b-revw','follow up':'b-revw',
+    'on hold':'b-arch','cancelled':'b-arch','archived':'b-arch','revisit':'b-arch','needs revisit':'b-arch'
+  };
   return m[(s||'').toLowerCase()]||'b-revw';
 }
 function syncUI(state){
@@ -726,7 +949,7 @@ function actBtns(id,ef,df){
   return`<div class="td-acts"><button class="ico-btn" onclick="${ef}('${id}')" title="Edit">✏️</button><button class="ico-btn btn-d" onclick="${df}('${id}')" title="Delete">🗑️</button></div>`;
 }
 function cmtCell(c){
-  if(!c)return`<td class="td-cmt" style="color:var(--txt3)">—</td>`;
+  if(!c) return`<td class="td-cmt" style="color:var(--txt3)">—</td>`;
   return`<td class="td-cmt" title="${esc(c)}" style="color:var(--ac);font-style:italic">💬 ${esc(c)}</td>`;
 }
 function renderErr(tbId,cols,err){
@@ -735,7 +958,7 @@ function renderErr(tbId,cols,err){
 }
 function selOpts(opts,sel){return opts.map(o=>`<option value="${o}" ${o===sel?'selected':''}>${o}</option>`).join('');}
 
-/* CSV DOWNLOAD */
+/* ── CSV ── */
 function escCSV(v){const s=String(v===null||v===undefined?'':v);return s.includes(',')||s.includes('"')||s.includes('\n')?'"'+s.replace(/"/g,'""')+'"':s;}
 function buildCSV(headers,rows){const lines=[headers.map(escCSV).join(',')];rows.forEach(r=>lines.push(headers.map(h=>escCSV(r[h]||'')).join(',')));return lines.join('\r\n');}
 function triggerDownload(csv,filename){
@@ -750,40 +973,51 @@ function dlCSV(key){
     pre:{headers:['Project Name','Work Description','Status','Comments'],rows:D.pre,file:'Pre_Sales_Activities'},
     app:{headers:['Application Name','Purpose','Status','Location / Repository','Comments'],rows:D.app,file:'App_Development'},
     learn:{headers:['Topic / Concept','Status','Comments'],rows:D.learn,file:'Learning_Logs'},
+    docs:{headers:['Topic','Purpose','Date Completed','Status','Location / Link','Comments'],rows:D.docs,file:'Documents'},
   };
-  const c=cfg[key];
-  if(!c){toast('Unknown table.','err');return;}
+  const c=cfg[key];if(!c){toast('Unknown table.','err');return;}
   if(!c.rows.length){toast('Table is empty — nothing to download.','inf');return;}
-  const date=new Date().toISOString().slice(0,10);
-  triggerDownload(buildCSV(c.headers,c.rows),`${c.file}_${date}.csv`);
+  triggerDownload(buildCSV(c.headers,c.rows),`${c.file}_${new Date().toISOString().slice(0,10)}.csv`);
   toast(`Downloaded: ${c.file}.csv`,'ok',2500);
 }
-function dlAllCSV(){['daily','post','pre','app','learn'].forEach((k,i)=>setTimeout(()=>dlCSV(k),i*350));}
+function dlAllCSV(){['daily','post','pre','app','learn','docs'].forEach((k,i)=>setTimeout(()=>dlCSV(k),i*350));}
 
-/* LOGIN */
+/* ═══════════════════════════════════════
+   LOGIN
+═══════════════════════════════════════ */
 let pinBuf='';
-function pk(d){if(pinBuf.length>=8)return;pinBuf+=d;updDots();if(pinBuf.length>=4)setTimeout(ps,60);}
-function pd(){pinBuf=pinBuf.slice(0,-1);updDots();$('perr').textContent='';}
+function pk(d){if(pinBuf.length>=8)return;pinBuf+=d;updDots();if(pinBuf.length>=4)setTimeout(ps,80);}
+function pdel(){pinBuf=pinBuf.slice(0,-1);updDots();$('perr').textContent='';}
 function updDots(){for(let i=0;i<4;i++){const d=$('d'+i);if(d)d.className='pdot'+(i<pinBuf.length?' on':'');}}
 function ps(){
   if(!pinBuf){$('perr').textContent='Enter your PIN.';return;}
   $('perr').textContent='';
   const entered=pinBuf;pinBuf='';updDots();
-  gRun('verifyPin',entered).then(r=>{if(r&&r.success)unlock();else showErr();}).catch(()=>{if(entered===LOCAL_PIN)unlock();else showErr();});
+  gRun('verifyPin',entered)
+    .then(r=>{if(r&&r.success)unlock();else showPinErr();})
+    .catch(()=>{if(entered===LOCAL_PIN)unlock();else showPinErr();});
 }
 function unlock(){$('login').style.display='none';$('app').style.display='block';initApp();}
-function showErr(){$('perr').textContent='❌ Incorrect PIN. Try again.';}
+function showPinErr(){$('perr').textContent='❌ Incorrect PIN. Try again.';}
 function lock(){$('app').style.display='none';$('login').style.display='flex';pinBuf='';updDots();$('perr').textContent='';}
 document.addEventListener('keydown',e=>{
   if($('login').style.display!=='none'){
     if(e.key>='0'&&e.key<='9')pk(e.key);
-    else if(e.key==='Backspace')pd();
+    else if(e.key==='Backspace')pdel();
     else if(e.key==='Enter')ps();
   }
 });
 
-/* INIT */
-function initApp(){setHomeDate();loadTargets();syncAll();loadSheetUrl();setInterval(syncAll,60000);}
+/* ═══════════════════════════════════════
+   INIT — batch fetch for speed
+═══════════════════════════════════════ */
+function initApp(){
+  setHomeDate();
+  const n=new Date();calYear=n.getFullYear();calMonth=n.getMonth();
+  syncAll();
+  setInterval(syncAll,60000);
+}
+
 function setHomeDate(){
   const n=new Date();
   $('h-date').textContent=n.toLocaleDateString('en-IN',{weekday:'long',year:'numeric',month:'long',day:'numeric'});
@@ -791,81 +1025,264 @@ function setHomeDate(){
   $('h-greet').textContent=h<12?'Good Morning 🌅':h<17?'Good Afternoon ☀️':'Good Evening 🌙';
   $('nd-date').value=today();$('nd-day').value=todayDay();
 }
-async function loadSheetUrl(){try{const r=await gRun('getSheetUrl');if(r&&r.url){$('sheet-url').value=r.url;$('open-sheet').href=r.url;}}catch(e){}}
+
 async function syncAll(){
   if(syncing)return;syncing=true;syncUI('ing');
-  try{await Promise.all([loadDaily(),loadPost(),loadPre(),loadApp(),loadLearn()]);syncUI('ok');updateStats();}
-  catch(e){syncUI('');toast('Sync failed. Check GAS_URL. '+e.message,'err');}
-  finally{syncing=false;}
-}
-function updateStats(){
-  $('st-daily').textContent=D.daily.length;$('st-post').textContent=D.post.length;
-  $('st-pre').textContent=D.pre.length;$('st-app').textContent=D.app.length;$('st-learn').textContent=D.learn.length;
+  try{
+    /* ── FAST PATH: one batch call for all tables ── */
+    const batch=await gRun('getAllData');
+    if(batch){
+      D.daily   = batch.daily    || [];
+      D.post    = batch.post     || [];
+      D.pre     = batch.pre      || [];
+      D.app     = batch.app      || [];
+      D.learn   = batch.learning || [];
+      D.docs    = batch.documents|| [];
+      if(batch.targets) Object.assign(TGT,batch.targets);
+      if(batch.sheetUrl){$('sheet-url').value=batch.sheetUrl;$('open-sheet').href=batch.sheetUrl;}
+      if(batch.calData){Object.assign(CAL_DATA,batch.calData);}
+    }
+    renderAll();syncUI('ok');
+  }catch(e){
+    /* ── FALLBACK: individual calls ── */
+    try{
+      await Promise.all([loadDaily(),loadPost(),loadPre(),loadApp(),loadLearn(),loadDocs()]);
+      syncUI('ok');
+    }catch(e2){syncUI('');toast('Sync failed: '+e2.message,'err');}
+  }finally{syncing=false;}
+  /* Load calendar month async (doesn't block) */
+  loadCalendarMonth(calYear,calMonth).catch(()=>{});
 }
 
-/* NAV */
+function renderAll(){
+  renderDaily();renderPost();renderPre();renderApp();renderLearn();renderDocs();
+  renderTgt('POST','post',D.post);renderTgt('PRE','pre',D.pre);
+  renderTgt('APP','app',D.app);renderTgt('LEARNING','learn',D.learn);
+  renderTgt('DOCS','docs',D.docs);
+  updateStats();updateTodaySummary();
+  // Load target inputs
+  const m={POST:'post',PRE:'pre',APP:'app',LEARNING:'learn',DOCS:'docs'};
+  Object.keys(m).forEach(k=>{const e=$('tgt-'+m[k]);if(e&&TGT[k]>0&&!e.value)e.value=TGT[k];});
+}
+
+function updateStats(){
+  $('st-daily').textContent=D.daily.length;$('st-post').textContent=D.post.length;
+  $('st-pre').textContent=D.pre.length;$('st-app').textContent=D.app.length;
+  $('st-learn').textContent=D.learn.length;$('st-docs').textContent=D.docs.length;
+}
+
+function updateTodaySummary(){
+  const td=today();
+  const todayDaily=D.daily.filter(r=>r['Date']===td).length;
+  const el=$('today-sum');
+  el.innerHTML=`
+    <div class="today-sum-row"><span class="today-sum-name">📋 Daily entries</span><span class="today-sum-count" style="color:var(--c-blue)">${todayDaily}</span></div>
+    <div class="today-sum-row"><span class="today-sum-name">🎫 Open tickets</span><span class="today-sum-count" style="color:var(--c-orange)">${D.post.filter(r=>r['Status']==='Open'||r['Status']==='In Progress').length}</span></div>
+    <div class="today-sum-row"><span class="today-sum-name">🤝 Active deals</span><span class="today-sum-count" style="color:var(--c-green)">${D.pre.filter(r=>r['Status']==='In Progress'||r['Status']==='Demo Scheduled').length}</span></div>
+    <div class="today-sum-row"><span class="today-sum-name">📄 Pending docs</span><span class="today-sum-count" style="color:var(--c-teal)">${D.docs.filter(r=>r['Status']==='In Progress'||r['Status']==='Draft').length}</span></div>
+  `;
+  // Update today status display
+  const ts=CAL_DATA[todayISO()];
+  if(ts){
+    const col=CAL_COLORS[ts]||'#64748B';
+    $('today-cur-dot').style.background=col;
+    $('today-cur-lbl').textContent=ts;
+    $('today-cur-lbl').style.color=col;
+    $('today-cur-wrap').style.display='flex';
+    document.querySelectorAll('.ts-btn').forEach(b=>{
+      const statusName=b.getAttribute('onclick').match(/setTodayStatus\('([^']+)'/)?.[1];
+      b.classList.toggle('active',statusName===ts);
+    });
+  }else{
+    $('today-cur-wrap').style.display='none';
+    document.querySelectorAll('.ts-btn').forEach(b=>b.classList.remove('active'));
+  }
+}
+
+/* ═══════════════════════════════════════
+   NAV & UI
+═══════════════════════════════════════ */
 function go(name,navEl){
   document.querySelectorAll('.panel').forEach(p=>p.classList.remove('on'));
   document.querySelectorAll('.nav').forEach(n=>n.classList.remove('on'));
   $('sec-'+name).classList.add('on');if(navEl)navEl.classList.add('on');
-  $('sidebar').classList.remove('open');
+  $('sidebar').classList.remove('mob-open');
 }
 function tog(id){const e=$(id);e.style.display=e.style.display==='none'?'block':'none';}
+
 function toggleTheme(){
   const h=document.documentElement,d=h.getAttribute('data-theme')==='dark';
   h.setAttribute('data-theme',d?'light':'dark');
-  $('theme-btn').textContent=d?'🌙':'☀️';localStorage.setItem('oad-t',d?'light':'dark');
+  $('theme-btn').textContent=d?'🌙':'☀️';
+  localStorage.setItem('oad-t',d?'light':'dark');
 }
-(function(){const t=localStorage.getItem('oad-t');if(t)document.documentElement.setAttribute('data-theme',t);window.addEventListener('DOMContentLoaded',()=>{const b=$('theme-btn');if(b)b.textContent=(localStorage.getItem('oad-t')||'dark')==='light'?'🌙':'☀️';});})();
-function toggleSidebar(){$('sidebar').classList.toggle('open');}
-window.addEventListener('resize',()=>{$('mob-btn').style.display=window.innerWidth<=768?'flex':'none';});
-window.dispatchEvent(new Event('resize'));
+function toggleCollapse(){
+  const sb=$('sidebar'),ct=$('content'),btn=$('scolbtn');
+  sb.classList.toggle('collapsed');ct.classList.toggle('cx');
+  btn.textContent=sb.classList.contains('collapsed')?'▶':'◀';
+}
+function toggleMob(){$('sidebar').classList.toggle('mob-open');}
+(function(){
+  const t=localStorage.getItem('oad-t');if(t)document.documentElement.setAttribute('data-theme',t);
+  window.addEventListener('DOMContentLoaded',()=>{
+    const b=$('theme-btn');if(b)b.textContent=(localStorage.getItem('oad-t')||'dark')==='light'?'🌙':'☀️';
+  });
+})();
+document.addEventListener('click',e=>{
+  const sb=$('sidebar');
+  if(window.innerWidth<=900&&!sb.contains(e.target)&&!$('mob-btn').contains(e.target)){
+    sb.classList.remove('mob-open');
+  }
+});
 
 /* MODAL */
-function om(title,body,ctx){editCtx=ctx;$('em-title').textContent=title;$('em-body').innerHTML=body;$('emodal').classList.add('open');if(ctx&&ctx.color)$('em-save').style.setProperty('--ac',ctx.color);}
+function om(title,body,ctx){
+  editCtx=ctx;$('em-title').textContent=title;$('em-body').innerHTML=body;
+  $('emodal').classList.add('open');
+  if(ctx&&ctx.color)$('em-save').style.setProperty('--ac',ctx.color);
+}
 function cm(){$('emodal').classList.remove('open');editCtx=null;}
 $('emodal').addEventListener('click',e=>{if(e.target.id==='emodal')cm();});
 
-/* ─── FIX 3: TARGETS — Total=all rows, Completed=done statuses, Remaining=total-completed ─── */
-function doneStatuses(k){return{POST:['Resolved','Closed'],PRE:['Won'],APP:['Completed'],LEARNING:['Completed']}[k]||['Completed'];}
-
-function renderTgt(tk,dk,rows){
-  const tgt=TGT[tk]||0;
-  const total=rows.length;
-  const done=rows.filter(r=>doneStatuses(tk).indexOf(r['Status'])!==-1).length;
-  // Remaining = total - completed (not done-statuses count, but actual remainder)
-  const remaining=total-done;
-  const pct=tgt>0?Math.min(100,Math.round((done/tgt)*100)):(total>0?Math.round((done/total)*100):0);
-  const toTarget=tgt>0?Math.max(0,tgt-done):0;
-
-  $('tt-'+dk+'-tot').textContent=total;
-  $('tt-'+dk+'-done').textContent=done;
-  $('tt-'+dk+'-rem').textContent=remaining;
-  $('pb-'+dk).style.width=pct+'%';
-  $('tl-'+dk+'-pct').textContent=pct+'%'+(tgt>0?' of target ('+tgt+')':' completion rate');
-  $('tl-'+dk+'-rem').textContent=tgt>0&&toTarget>0?toTarget+' left to reach target':(tgt>0&&toTarget===0?'🎯 Target reached!':'');
-  const inp=$('tgt-'+dk);if(inp&&!inp.value&&tgt>0)inp.value=tgt;
+/* ═══════════════════════════════════════
+   CALENDAR
+═══════════════════════════════════════ */
+function fmtYM(y,m){
+  return new Date(y,m,1).toLocaleDateString('en-IN',{month:'long',year:'numeric'});
+}
+function calNav(dir){
+  calMonth+=dir;
+  if(calMonth<0){calMonth=11;calYear--;}
+  if(calMonth>11){calMonth=0;calYear++;}
+  loadCalendarMonth(calYear,calMonth).catch(()=>renderCalendar());
 }
 
+async function loadCalendarMonth(y,m){
+  try{
+    const r=await gRun('getCalendarMonth',y,m+1);
+    if(r&&r.days) Object.assign(CAL_DATA,r.days);
+  }catch(e){}
+  renderCalendar();
+}
+
+function renderCalendar(){
+  $('cal-title').textContent=fmtYM(calYear,calMonth);
+  const grid=$('cal-grid');
+  const firstDay=new Date(calYear,calMonth,1);
+  const daysInMonth=new Date(calYear,calMonth+1,0).getDate();
+  // Monday-based: 0=Mon,6=Sun
+  let startDow=firstDay.getDay();startDow=(startDow===0)?6:startDow-1;
+  const todayStr=todayISO();
+  let html='';
+  for(let i=0;i<startDow;i++) html+=`<div class="cal-cell cal-empty"></div>`;
+  for(let d=1;d<=daysInMonth;d++){
+    const ds=`${calYear}-${String(calMonth+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
+    const dow=new Date(calYear,calMonth,d).getDay();
+    const isWkend=(dow===0||dow===6);
+    const isTdy=(ds===todayStr);
+    const status=CAL_DATA[ds];
+    const dotColor=status?CAL_COLORS[status]||'#64748B':null;
+    let cls=`cal-cell${isWkend?' cal-wkend':''}${isTdy?' cal-today':''}`;
+    let bdr=status?`border-color:${dotColor}22;background:${dotColor}10;`:'';
+    let click=!isWkend?`onclick="openCalModal('${ds}')"`:'' ;
+    html+=`<div class="${cls}" ${click} style="${bdr}">
+      <span>${d}</span>
+      ${dotColor?`<div class="cal-status-dot" style="background:${dotColor}"></div>`:''}
+    </div>`;
+  }
+  grid.innerHTML=html;
+  updateTodaySummary();
+}
+
+function openCalModal(dateStr){
+  calEditDate=dateStr;
+  const d=new Date(dateStr+'T00:00:00');
+  $('cal-modal-title').textContent='📅 '+d.toLocaleDateString('en-IN',{weekday:'long',day:'numeric',month:'long',year:'numeric'});
+  const curStatus=CAL_DATA[dateStr];
+  const statuses=[
+    {s:'Present',i:'🏢',c:'#10D98B'},{s:'WFH',i:'🏠',c:'#0DD9F5'},
+    {s:'Leave',i:'🌴',c:'#FFB830'},{s:'Holiday',i:'🎉',c:'#4A9EFF'},
+    {s:'Customer Visit',i:'🚗',c:'#B06EFF'},{s:'Half Day',i:'⏰',c:'#FF7A35'},
+  ];
+  $('cal-modal-body').innerHTML=statuses.map(({s,i,c})=>
+    `<button class="cday-btn ${curStatus===s?'sel':''}" style="--cbC:${c}" onclick="pickCalStatus('${s}')">
+      <span class="cbi">${i}</span><span class="cbl">${s}</span>
+    </button>`
+  ).join('');
+  $('calmodal').classList.add('open');
+}
+function closeCalModal(){$('calmodal').classList.remove('open');calEditDate=null;}
+async function pickCalStatus(status){
+  if(!calEditDate)return;
+  CAL_DATA[calEditDate]=status;renderCalendar();closeCalModal();
+  try{await gRun('setCalendarDay',calEditDate,status);toast('Status saved: '+status,'ok',2000);}
+  catch(e){toast('Could not save status: '+e.message,'err');}
+}
+async function clearCalDay(){
+  if(!calEditDate)return;
+  delete CAL_DATA[calEditDate];renderCalendar();closeCalModal();
+  try{await gRun('setCalendarDay',calEditDate,'');toast('Status cleared','inf',2000);}
+  catch(e){}
+}
+$('calmodal').addEventListener('click',e=>{if(e.target.id==='calmodal')closeCalModal();});
+
+/* Today status buttons */
+function setTodayStatus(status,color,btn){
+  const ds=todayISO();CAL_DATA[ds]=status;
+  document.querySelectorAll('.ts-btn').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');
+  $('today-cur-dot').style.background=color;
+  $('today-cur-lbl').textContent=status;
+  $('today-cur-lbl').style.color=color;
+  $('today-cur-wrap').style.display='flex';
+  renderCalendar();
+  gRun('setCalendarDay',ds,status).then(()=>toast('Status saved: '+status,'ok',2000)).catch(e=>toast('Error: '+e.message,'err'));
+}
+function clearTodayStatus(){
+  const ds=todayISO();delete CAL_DATA[ds];
+  $('today-cur-wrap').style.display='none';
+  document.querySelectorAll('.ts-btn').forEach(b=>b.classList.remove('active'));
+  renderCalendar();
+  gRun('setCalendarDay',ds,'').catch(()=>{});
+}
+
+/* ═══════════════════════════════════════
+   TARGETS
+═══════════════════════════════════════ */
+function doneStatuses(k){return{POST:['Resolved','Closed'],PRE:['Won'],APP:['Completed'],LEARNING:['Completed'],DOCS:['Completed']}[k]||['Completed'];}
+function renderTgt(tk,dk,rows){
+  const tgt=TGT[tk]||0;const total=rows.length;
+  const done=rows.filter(r=>doneStatuses(tk).includes(r['Status'])).length;
+  const rem=total-done;
+  const pct=tgt>0?Math.min(100,Math.round((done/tgt)*100)):(total>0?Math.round((done/total)*100):0);
+  const toTarget=tgt>0?Math.max(0,tgt-done):0;
+  $('tt-'+dk+'-tot').textContent=total;$('tt-'+dk+'-done').textContent=done;$('tt-'+dk+'-rem').textContent=rem;
+  $('pb-'+dk).style.width=pct+'%';
+  $('tl-'+dk+'-pct').textContent=pct+'%'+(tgt>0?' of target ('+tgt+')':' completion rate');
+  $('tl-'+dk+'-rem').textContent=tgt>0&&toTarget>0?toTarget+' left to target':(tgt>0&&toTarget===0?'🎯 Target reached!':'');
+  const inp=$('tgt-'+dk);if(inp&&!inp.value&&tgt>0)inp.value=tgt;
+}
 function updTgt(tk,dk){TGT[tk]=parseInt($('tgt-'+dk).value)||0;renderTgt(tk,dk,D[dk]||[]);}
 async function saveTgt(tk,dk){
   const v=parseInt($('tgt-'+dk).value)||0;TGT[tk]=v;
   try{await gRun('setTarget',tk,v);toast('Target saved: '+v,'ok',2000);renderTgt(tk,dk,D[dk]||[]);}
   catch(e){toast('Could not save target: '+e.message,'err');}
 }
-async function loadTargets(){
-  try{const r=await gRun('getTargets');if(r&&r.targets){Object.assign(TGT,r.targets);const m={POST:'post',PRE:'pre',APP:'app',LEARNING:'learn'};Object.keys(m).forEach(k=>{const e=$('tgt-'+m[k]);if(e&&TGT[k]>0)e.value=TGT[k];});}}catch(e){}
-}
 
-/* TABLE 1: DAILY — FIX 1: No S.No column in render */
-async function loadDaily(){try{const r=await gRun('getDailyLogs');D.daily=r.rows||[];renderDaily();}catch(e){renderErr('tb-daily',6,e);}}
+/* ═══════════════════════════════════════
+   TABLE 1: DAILY WORK LOGS
+═══════════════════════════════════════ */
+async function loadDaily(){
+  try{const r=await gRun('getDailyLogs');D.daily=r.rows||[];renderDaily();updateStats();updateTodaySummary();}
+  catch(e){renderErr('tb-daily',6,e);}
+}
 function renderDaily(){
   const tb=$('tb-daily');
   if(!D.daily.length){tb.innerHTML=`<tr><td colspan="6"><div class="t-empty"><div class="ei">📋</div><p>No entries yet.<br>Add your first daily work log!</p></div></td></tr>`;return;}
-  tb.innerHTML=D.daily.slice().reverse().map((r)=>{
+  tb.innerHTML=D.daily.slice().reverse().map(r=>{
     const hc=!!r['Comments'];
     return`<tr class="${hc?'has-cmt':''}" style="--ac:var(--c-blue)">
-      <td style="white-space:nowrap;font-size:12px;color:var(--txt2)">${esc(r['Date'])||'—'}</td>
+      <td style="white-space:nowrap;font-size:12px;font-family:var(--fm);color:var(--txt2)">${esc(r['Date'])||'—'}</td>
       <td style="font-size:12px;color:var(--txt3)">${esc(r['Day'])||'—'}</td>
       <td style="max-width:260px;white-space:pre-wrap;word-break:break-word">${esc(r['Task'])||'—'}</td>
       <td><span class="badge ${badge(r['Status'])}">${esc(r['Status'])||'—'}</span></td>
@@ -878,8 +1295,11 @@ async function saveDaily(){
   const task=val('nd-task'),status=val('nd-status'),cmt=val('nd-cmt');
   if(!task){toast('Task description is required.','err');return;}
   setBtn('nd-btn',true,'Saving…');
-  try{await gRun('addDailyLog',today(),todayDay(),task,status,cmt);$('nd-task').value=$('nd-cmt').value='';tog('df');await loadDaily();updateStats();toast('Entry saved!','ok');}
-  catch(e){toast('Error: '+e.message,'err');}
+  try{
+    await gRun('addDailyLog',today(),todayDay(),task,status,cmt);
+    $('nd-task').value=$('nd-cmt').value='';tog('df');
+    await loadDaily();toast('Entry saved!','ok');
+  }catch(e){toast('Error: '+e.message,'err');}
   setBtn('nd-btn',false,'Save Entry');
 }
 function editDaily(id){
@@ -890,16 +1310,21 @@ function editDaily(id){
      <div class="field"><label>💬 Comments</label><input class="cmt-field" id="e-cmt" value="${esc(r['Comments']||'')}"/></div>`,
     {table:'daily',id,color:'var(--c-blue)'});
 }
-async function delDaily(id){if(!confirm('Delete this entry?'))return;try{await gRun('deleteDailyLog',id);await loadDaily();updateStats();toast('Deleted.','inf');}catch(e){toast('Error: '+e.message,'err');}}
+async function delDaily(id){if(!confirm('Delete this entry?'))return;try{await gRun('deleteDailyLog',id);await loadDaily();toast('Deleted.','inf');}catch(e){toast('Error: '+e.message,'err');}}
 
-/* TABLE 2: POST SALES — FIX 1: No S.No column in render */
-async function loadPost(){try{const r=await gRun('getPostSales');D.post=r.rows||[];renderPost();renderTgt('POST','post',D.post);}catch(e){renderErr('tb-post',5,e);}}
+/* ═══════════════════════════════════════
+   TABLE 2: POST SALES
+═══════════════════════════════════════ */
+async function loadPost(){
+  try{const r=await gRun('getPostSales');D.post=r.rows||[];renderPost();renderTgt('POST','post',D.post);updateStats();}
+  catch(e){renderErr('tb-post',5,e);}
+}
 function renderPost(){
   const tb=$('tb-post');
   if(!D.post.length){tb.innerHTML=`<tr><td colspan="5"><div class="t-empty"><div class="ei">🎫</div><p>No tickets yet.</p></div></td></tr>`;return;}
-  tb.innerHTML=D.post.map((r)=>{const hc=!!r['Comments'];
+  tb.innerHTML=D.post.map(r=>{const hc=!!r['Comments'];
     return`<tr class="${hc?'has-cmt':''}" style="--ac:var(--c-orange)">
-      <td style="font-weight:700;color:var(--c-orange)">${esc(r['Ticket Number']||'—')}</td>
+      <td style="font-weight:700;font-family:var(--fm);font-size:12px;color:var(--c-orange)">${esc(r['Ticket Number']||'—')}</td>
       <td style="max-width:240px;white-space:pre-wrap;word-break:break-word">${esc(r['Description']||'—')}</td>
       <td><span class="badge ${badge(r['Status'])}">${esc(r['Status']||'—')}</span></td>
       ${cmtCell(r['Comments'])}
@@ -911,8 +1336,11 @@ async function savePost(){
   const ticket=val('np-ticket'),desc=val('np-desc'),status=val('np-status'),cmt=val('np-cmt');
   if(!ticket||!desc){toast('Ticket number and description required.','err');return;}
   setBtn('np-btn',true,'Saving…');
-  try{const sno=(await gRun('getNextSno','PostSalesTickets')).sno;await gRun('addPostSale',sno,ticket,desc,status,cmt);$('np-ticket').value=$('np-desc').value=$('np-cmt').value='';tog('pf');await loadPost();updateStats();toast('Ticket saved!','ok');}
-  catch(e){toast('Error: '+e.message,'err');}
+  try{
+    const sno=(await gRun('getNextSno','PostSalesTickets')).sno;
+    await gRun('addPostSale',sno,ticket,desc,status,cmt);
+    $('np-ticket').value=$('np-desc').value=$('np-cmt').value='';tog('pf');await loadPost();toast('Ticket saved!','ok');
+  }catch(e){toast('Error: '+e.message,'err');}
   setBtn('np-btn',false,'Save Ticket');
 }
 function editPost(id){
@@ -924,14 +1352,19 @@ function editPost(id){
      <div class="field"><label>💬 Comments</label><input class="cmt-field" id="e-cmt" value="${esc(r['Comments']||'')}"/></div>`,
     {table:'post',id,color:'var(--c-orange)'});
 }
-async function delPost(id){if(!confirm('Delete this ticket?'))return;try{await gRun('deletePostSale',id);await loadPost();updateStats();toast('Deleted.','inf');}catch(e){toast('Error: '+e.message,'err');}}
+async function delPost(id){if(!confirm('Delete this ticket?'))return;try{await gRun('deletePostSale',id);await loadPost();toast('Deleted.','inf');}catch(e){toast('Error: '+e.message,'err');}}
 
-/* TABLE 3: PRE SALES — FIX 1: No S.No column in render */
-async function loadPre(){try{const r=await gRun('getPreSales');D.pre=r.rows||[];renderPre();renderTgt('PRE','pre',D.pre);}catch(e){renderErr('tb-pre',5,e);}}
+/* ═══════════════════════════════════════
+   TABLE 3: PRE SALES
+═══════════════════════════════════════ */
+async function loadPre(){
+  try{const r=await gRun('getPreSales');D.pre=r.rows||[];renderPre();renderTgt('PRE','pre',D.pre);updateStats();}
+  catch(e){renderErr('tb-pre',5,e);}
+}
 function renderPre(){
   const tb=$('tb-pre');
   if(!D.pre.length){tb.innerHTML=`<tr><td colspan="5"><div class="t-empty"><div class="ei">🤝</div><p>No activities yet.</p></div></td></tr>`;return;}
-  tb.innerHTML=D.pre.map((r)=>{const hc=!!r['Comments'];
+  tb.innerHTML=D.pre.map(r=>{const hc=!!r['Comments'];
     return`<tr class="${hc?'has-cmt':''}" style="--ac:var(--c-green)">
       <td style="font-weight:700;color:var(--c-green)">${esc(r['Project Name']||'—')}</td>
       <td style="max-width:220px;white-space:pre-wrap">${esc(r['Work Description']||'—')}</td>
@@ -944,8 +1377,11 @@ function renderPre(){
 async function savePre(){
   const proj=val('nre-proj'),work=val('nre-work'),status=val('nre-status'),cmt=val('nre-cmt');
   if(!proj||!work){toast('Project name and work description required.','err');return;}
-  try{const sno=(await gRun('getNextSno','PreSalesActivities')).sno;await gRun('addPreSale',sno,proj,work,status,cmt);$('nre-proj').value=$('nre-work').value=$('nre-cmt').value='';tog('pref');await loadPre();updateStats();toast('Activity saved!','ok');}
-  catch(e){toast('Error: '+e.message,'err');}
+  try{
+    const sno=(await gRun('getNextSno','PreSalesActivities')).sno;
+    await gRun('addPreSale',sno,proj,work,status,cmt);
+    $('nre-proj').value=$('nre-work').value=$('nre-cmt').value='';tog('pref');await loadPre();toast('Activity saved!','ok');
+  }catch(e){toast('Error: '+e.message,'err');}
 }
 function editPre(id){
   const r=D.pre.find(x=>x['ID']===id);if(!r)return;
@@ -956,14 +1392,19 @@ function editPre(id){
      <div class="field"><label>💬 Comments</label><input class="cmt-field" id="e-cmt" value="${esc(r['Comments']||'')}"/></div>`,
     {table:'pre',id,color:'var(--c-green)'});
 }
-async function delPre(id){if(!confirm('Delete this activity?'))return;try{await gRun('deletePreSale',id);await loadPre();updateStats();toast('Deleted.','inf');}catch(e){toast('Error: '+e.message,'err');}}
+async function delPre(id){if(!confirm('Delete this activity?'))return;try{await gRun('deletePreSale',id);await loadPre();toast('Deleted.','inf');}catch(e){toast('Error: '+e.message,'err');}}
 
-/* TABLE 4: APP DEV — FIX 1: No S.No, FIX 2: Status field added */
-async function loadApp(){try{const r=await gRun('getAppDev');D.app=r.rows||[];renderApp();renderTgt('APP','app',D.app);}catch(e){renderErr('tb-app',6,e);}}
+/* ═══════════════════════════════════════
+   TABLE 4: APP DEVELOPMENT
+═══════════════════════════════════════ */
+async function loadApp(){
+  try{const r=await gRun('getAppDev');D.app=r.rows||[];renderApp();renderTgt('APP','app',D.app);updateStats();}
+  catch(e){renderErr('tb-app',6,e);}
+}
 function renderApp(){
   const tb=$('tb-app');
   if(!D.app.length){tb.innerHTML=`<tr><td colspan="6"><div class="t-empty"><div class="ei">💻</div><p>No apps tracked yet.</p></div></td></tr>`;return;}
-  tb.innerHTML=D.app.map((r)=>{const hc=!!r['Comments'];
+  tb.innerHTML=D.app.map(r=>{const hc=!!r['Comments'];
     return`<tr class="${hc?'has-cmt':''}" style="--ac:var(--c-purple)">
       <td style="font-weight:700;color:var(--c-purple)">${esc(r['Application Name']||'—')}</td>
       <td style="max-width:180px">${esc(r['Purpose']||'—')}</td>
@@ -977,8 +1418,12 @@ function renderApp(){
 async function saveApp(){
   const name=val('na-name'),purp=val('na-purp'),loc=val('na-loc'),status=val('na-status'),cmt=val('na-cmt');
   if(!name){toast('Application name is required.','err');return;}
-  try{const sno=(await gRun('getNextSno','ApplicationDevelopment')).sno;await gRun('addAppDev',sno,name,purp,loc,status,cmt);['na-name','na-purp','na-loc','na-cmt'].forEach(i=>$(i).value='');$('na-status').selectedIndex=1;tog('af');await loadApp();updateStats();toast('App saved!','ok');}
-  catch(e){toast('Error: '+e.message,'err');}
+  try{
+    const sno=(await gRun('getNextSno','ApplicationDevelopment')).sno;
+    await gRun('addAppDev',sno,name,purp,loc,status,cmt);
+    ['na-name','na-purp','na-loc','na-cmt'].forEach(i=>$(i).value='');$('na-status').selectedIndex=1;
+    tog('af');await loadApp();toast('App saved!','ok');
+  }catch(e){toast('Error: '+e.message,'err');}
 }
 function editApp(id){
   const r=D.app.find(x=>x['ID']===id);if(!r)return;
@@ -990,14 +1435,19 @@ function editApp(id){
      <div class="field"><label>💬 Comments</label><input class="cmt-field" id="e-cmt" value="${esc(r['Comments']||'')}"/></div>`,
     {table:'app',id,color:'var(--c-purple)'});
 }
-async function delApp(id){if(!confirm('Delete this app record?'))return;try{await gRun('deleteAppDev',id);await loadApp();updateStats();toast('Deleted.','inf');}catch(e){toast('Error: '+e.message,'err');}}
+async function delApp(id){if(!confirm('Delete this app record?'))return;try{await gRun('deleteAppDev',id);await loadApp();toast('Deleted.','inf');}catch(e){toast('Error: '+e.message,'err');}}
 
-/* TABLE 5: LEARNING — FIX 1: No S.No column in render */
-async function loadLearn(){try{const r=await gRun('getLearning');D.learn=r.rows||[];renderLearn();renderTgt('LEARNING','learn',D.learn);}catch(e){renderErr('tb-learn',4,e);}}
+/* ═══════════════════════════════════════
+   TABLE 5: LEARNING LOGS
+═══════════════════════════════════════ */
+async function loadLearn(){
+  try{const r=await gRun('getLearning');D.learn=r.rows||[];renderLearn();renderTgt('LEARNING','learn',D.learn);updateStats();}
+  catch(e){renderErr('tb-learn',4,e);}
+}
 function renderLearn(){
   const tb=$('tb-learn');
   if(!D.learn.length){tb.innerHTML=`<tr><td colspan="4"><div class="t-empty"><div class="ei">🎓</div><p>No learning entries yet.</p></div></td></tr>`;return;}
-  tb.innerHTML=D.learn.map((r)=>{const hc=!!r['Comments'];
+  tb.innerHTML=D.learn.map(r=>{const hc=!!r['Comments'];
     return`<tr class="${hc?'has-cmt':''}" style="--ac:var(--c-cyan)">
       <td style="font-weight:600;color:var(--c-cyan)">${esc(r['Topic / Concept']||'—')}</td>
       <td><span class="badge ${badge(r['Status'])}">${esc(r['Status']||'—')}</span></td>
@@ -1009,8 +1459,11 @@ function renderLearn(){
 async function saveLearn(){
   const topic=val('nl-topic'),status=val('nl-status'),cmt=val('nl-cmt');
   if(!topic){toast('Topic / concept is required.','err');return;}
-  try{const sno=(await gRun('getNextSno','LearningLogs')).sno;await gRun('addLearning',sno,topic,status,cmt);$('nl-topic').value=$('nl-cmt').value='';tog('lf');await loadLearn();updateStats();toast('Learning entry saved!','ok');}
-  catch(e){toast('Error: '+e.message,'err');}
+  try{
+    const sno=(await gRun('getNextSno','LearningLogs')).sno;
+    await gRun('addLearning',sno,topic,status,cmt);
+    $('nl-topic').value=$('nl-cmt').value='';tog('lf');await loadLearn();toast('Learning entry saved!','ok');
+  }catch(e){toast('Error: '+e.message,'err');}
 }
 function editLearn(id){
   const r=D.learn.find(x=>x['ID']===id);if(!r)return;
@@ -1020,25 +1473,77 @@ function editLearn(id){
      <div class="field"><label>💬 Comments</label><input class="cmt-field" id="e-cmt" value="${esc(r['Comments']||'')}"/></div>`,
     {table:'learn',id,color:'var(--c-cyan)'});
 }
-async function delLearn(id){if(!confirm('Delete this entry?'))return;try{await gRun('deleteLearning',id);await loadLearn();updateStats();toast('Deleted.','inf');}catch(e){toast('Error: '+e.message,'err');}}
+async function delLearn(id){if(!confirm('Delete this entry?'))return;try{await gRun('deleteLearning',id);await loadLearn();toast('Deleted.','inf');}catch(e){toast('Error: '+e.message,'err');}}
 
-/* EDIT MODAL SAVE */
+/* ═══════════════════════════════════════
+   TABLE 6: DOCUMENTS (NEW)
+═══════════════════════════════════════ */
+async function loadDocs(){
+  try{const r=await gRun('getDocuments');D.docs=r.rows||[];renderDocs();renderTgt('DOCS','docs',D.docs);updateStats();}
+  catch(e){renderErr('tb-docs',7,e);}
+}
+function renderDocs(){
+  const tb=$('tb-docs');
+  if(!D.docs.length){tb.innerHTML=`<tr><td colspan="7"><div class="t-empty"><div class="ei">📄</div><p>No documents tracked yet.<br>Add your first document!</p></div></td></tr>`;return;}
+  tb.innerHTML=D.docs.map(r=>{const hc=!!r['Comments'];
+    return`<tr class="${hc?'has-cmt':''}" style="--ac:var(--c-teal)">
+      <td style="font-weight:700;color:var(--c-teal)">${esc(r['Topic']||'—')}</td>
+      <td style="max-width:180px">${esc(r['Purpose']||'—')}</td>
+      <td style="font-family:var(--fm);font-size:12px;white-space:nowrap">${esc(r['Date Completed']||'—')}</td>
+      <td><span class="badge ${badge(r['Status'])}">${esc(r['Status']||'—')}</span></td>
+      <td style="font-size:12px;max-width:160px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;color:var(--txt2)" title="${esc(r['Location / Link']||'')}">${esc(r['Location / Link']||'—')}</td>
+      ${cmtCell(r['Comments'])}
+      <td>${actBtns(r['ID'],'editDocs','delDocs')}</td>
+    </tr>`;
+  }).join('');
+}
+async function saveDocs(){
+  const topic=val('ndoc-topic'),purpose=val('ndoc-purpose'),dateComp=val('ndoc-date'),
+        status=val('ndoc-status'),loc=val('ndoc-loc'),cmt=val('ndoc-cmt');
+  if(!topic){toast('Document name is required.','err');return;}
+  setBtn('ndoc-btn',true,'Saving…');
+  try{
+    const sno=(await gRun('getNextSno','Documents')).sno;
+    await gRun('addDocument',sno,topic,purpose,dateComp,loc,status,cmt);
+    ['ndoc-topic','ndoc-purpose','ndoc-date','ndoc-loc','ndoc-cmt'].forEach(i=>$(i).value='');
+    tog('docf');await loadDocs();toast('Document saved!','ok');
+  }catch(e){toast('Error: '+e.message,'err');}
+  setBtn('ndoc-btn',false,'Save Document');
+}
+function editDocs(id){
+  const r=D.docs.find(x=>x['ID']===id);if(!r)return;
+  om('✏️ Edit Document',
+    `<div class="field"><label>Topic / Document Name</label><input id="e-dtopic" value="${esc(r['Topic']||'')}"/></div>
+     <div class="field"><label>Purpose</label><input id="e-dpurpose" value="${esc(r['Purpose']||'')}"/></div>
+     <div class="field"><label>Date Completed</label><input type="date" id="e-ddate" value="${esc(r['Date Completed']||'')}"/></div>
+     <div class="field"><label>Status</label><select id="e-dstatus">${selOpts(['Draft','In Progress','Under Review','Completed','Archived'],r['Status'])}</select></div>
+     <div class="field"><label>Location / Link</label><input id="e-dloc" value="${esc(r['Location / Link']||'')}"/></div>
+     <div class="field"><label>💬 Comments</label><input class="cmt-field" id="e-cmt" value="${esc(r['Comments']||'')}"/></div>`,
+    {table:'docs',id,color:'var(--c-teal)'});
+}
+async function delDocs(id){if(!confirm('Delete this document?'))return;try{await gRun('deleteDocument',id);await loadDocs();toast('Deleted.','inf');}catch(e){toast('Error: '+e.message,'err');}}
+
+/* ═══════════════════════════════════════
+   EDIT MODAL SAVE
+═══════════════════════════════════════ */
 async function saveEdit(){
   if(!editCtx)return;const{table,id}=editCtx;
   setBtn('em-save',true,'Saving…');
   try{
-    if(table==='daily'){await gRun('updateDailyLog',id,val('e-task'),val('e-status'),val('e-cmt'));await loadDaily();}
-    else if(table==='post'){await gRun('updatePostSale',id,val('e-ticket'),val('e-desc'),val('e-status'),val('e-cmt'));await loadPost();}
-    else if(table==='pre'){await gRun('updatePreSale',id,val('e-proj'),val('e-work'),val('e-status'),val('e-cmt'));await loadPre();}
-    // FIX 2: App edit now includes status (e-astatus)
-    else if(table==='app'){await gRun('updateAppDev',id,val('e-aname'),val('e-apurp'),val('e-aloc'),val('e-astatus'),val('e-cmt'));await loadApp();}
-    else if(table==='learn'){await gRun('updateLearning',id,val('e-topic'),val('e-status'),val('e-cmt'));await loadLearn();}
+    if(table==='daily')  {await gRun('updateDailyLog',id,val('e-task'),val('e-status'),val('e-cmt'));await loadDaily();}
+    else if(table==='post')  {await gRun('updatePostSale',id,val('e-ticket'),val('e-desc'),val('e-status'),val('e-cmt'));await loadPost();}
+    else if(table==='pre')   {await gRun('updatePreSale',id,val('e-proj'),val('e-work'),val('e-status'),val('e-cmt'));await loadPre();}
+    else if(table==='app')   {await gRun('updateAppDev',id,val('e-aname'),val('e-apurp'),val('e-aloc'),val('e-astatus'),val('e-cmt'));await loadApp();}
+    else if(table==='learn') {await gRun('updateLearning',id,val('e-topic'),val('e-status'),val('e-cmt'));await loadLearn();}
+    else if(table==='docs')  {await gRun('updateDocument',id,val('e-dtopic'),val('e-dpurpose'),val('e-ddate'),val('e-dstatus'),val('e-dloc'),val('e-cmt'));await loadDocs();}
     cm();toast('Changes saved!','ok');
   }catch(e){toast('Error: '+e.message,'err');}
   setBtn('em-save',false,'Save Changes');
 }
 
-/* SETTINGS */
+/* ═══════════════════════════════════════
+   SETTINGS
+═══════════════════════════════════════ */
 async function changePin(){
   const old=val('pin-old'),nw=val('pin-new'),conf=val('pin-confirm');
   if(!old||!nw){toast('Fill in all PIN fields.','err');return;}
@@ -1051,7 +1556,7 @@ async function changePin(){
   }catch(e){toast('Error: '+e.message,'err');}
 }
 
-window.addEventListener('load',setHomeDate);
+window.addEventListener('load',()=>{setHomeDate();renderCalendar();});
 </script>
 </body>
 </html>
