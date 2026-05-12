@@ -677,7 +677,7 @@ tbody tr:hover{background:color-mix(in srgb,var(--ac,var(--c-blue)) 4%,transpare
             <div class="field"><label>Purpose</label><input id="na-purp" placeholder="e.g. HR self-service portal"/></div>
           </div>
           <div class="g2">
-            <div class="field"><label>Location / Repository / </label><input id="na-loc" placeholder="e.g. github.com/org/repo"/></div>
+            <div class="field"><label>Location / Repository / URL</label><input id="na-loc" placeholder="e.g. github.com/org/repo"/></div>
             <div class="field"><label>Status</label>
               <select id="na-status">
                 <option value="Planning">📝 Planning</option>
@@ -838,8 +838,8 @@ tbody tr:hover{background:color-mix(in srgb,var(--ac,var(--c-blue)) 4%,transpare
       <div class="scard">
         <div class="scard-title">📊 Linked Google Sheet</div>
         <div class="field" style="margin-bottom:14px">
-          <label>Google Sheet </label>
-          <input id="sheet-" readonly placeholder="Auto-loaded after login…" style="font-size:12px"/>
+          <label>Google Sheet URL</label>
+          <input id="sheet-url" readonly placeholder="Auto-loaded after login…" style="font-size:12px"/>
         </div>
         <a id="open-sheet" href="#" target="_blank" class="btn btn-g btn-sm">📊 Open Google Sheet ↗</a>
       </div>
@@ -884,15 +884,15 @@ tbody tr:hover{background:color-mix(in srgb,var(--ac,var(--c-blue)) 4%,transpare
 
 <script>
 /* ══════════════════════════════════════════
-   CONFIG — set GAS_ before use
+   CONFIG — set GAS_URL before use
 ══════════════════════════════════════════ */
-const GAS_   = 'https://script.google.com/macros/s/AKfycbzhH0m7nGGSk17QZksxBtS-Z684LinFtqNcppXx0sSqYQJJvNsmwIMyF9DUBrZAWCjWFw/exec';
+const GAS_URL   = 'https://script.google.com/macros/s/AKfycbzhH0m7nGGSk17QZksxBtS-Z684LinFtqNcppXx0sSqYQJJvNsmwIMyF9DUBrZAWCjWFw/exec';
 const LOCAL_PIN = '1234';
 
 /* ── API ── */
 function gRun(fn,...args){
-  if(!GAS_) return Promise.reject(new Error('GAS_ not set.'));
-  return fetch(GAS_,{method:'POST',headers:{'Content-Type':'text/plain'},
+  if(!GAS_URL) return Promise.reject(new Error('GAS_URL not set.'));
+  return fetch(GAS_URL,{method:'POST',headers:{'Content-Type':'text/plain'},
     body:JSON.stringify({fn,args})})
     .then(r=>{if(!r.ok) throw new Error('HTTP '+r.status);return r.json();})
     .then(res=>{if(res&&res.__error) throw new Error(res.__error);return res;});
@@ -963,8 +963,8 @@ function escCSV(v){const s=String(v===null||v===undefined?'':v);return s.include
 function buildCSV(headers,rows){const lines=[headers.map(escCSV).join(',')];rows.forEach(r=>lines.push(headers.map(h=>escCSV(r[h]||'')).join(',')));return lines.join('\r\n');}
 function triggerDownload(csv,filename){
   const blob=new Blob([csv],{type:'text/csv;charset=utf-8;'});
-  const =.createObject(blob);const a=document.createElement('a');
-  a.href=;a.download=filename;a.click();setTimeout(()=>.revokeObject(),1000);
+  const url=URL.createObjectURL(blob);const a=document.createElement('a');
+  a.href=url;a.download=filename;a.click();setTimeout(()=>URL.revokeObjectURL(url),1000);
 }
 function dlCSV(key){
   const cfg={
@@ -1039,7 +1039,7 @@ async function syncAll(){
       D.learn   = batch.learning || [];
       D.docs    = batch.documents|| [];
       if(batch.targets) Object.assign(TGT,batch.targets);
-      if(batch.sheet){$('sheet-').value=batch.sheet;$('open-sheet').href=batch.sheet;}
+      if(batch.sheetUrl){$('sheet-url').value=batch.sheetUrl;$('open-sheet').href=batch.sheetUrl;}
       if(batch.calData){Object.assign(CAL_DATA,batch.calData);}
     }
     renderAll();syncUI('ok');
