@@ -947,7 +947,7 @@ function badge(s){
     'under review':'b-revw','follow up':'b-revw',
     'on hold':'b-arch','cancelled':'b-arch','archived':'b-arch','revisit':'b-arch','needs revisit':'b-arch'
   };
-  return m[(s||'').toLowerCase()]||'b-revw';
+  return m[String(s||'').toLowerCase()]||'b-revw';
 }
 function syncUI(state){
   const p=$('spill'),d=$('sdot'),l=$('slbl');
