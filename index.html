@@ -890,12 +890,49 @@ const GAS_URL   = 'https://script.google.com/macros/s/AKfycbzhH0m7nGGSk17QZksxBt
 const LOCAL_PIN = '1234';
 
 /* ── API ── */
-function gRun(fn,...args){
-  if(!GAS_URL) return Promise.reject(new Error('GAS_URL not set.'));
-  return fetch(GAS_URL,{method:'POST',headers:{'Content-Type':'text/plain'},
-    body:JSON.stringify({fn,args})})
-    .then(r=>{if(!r.ok) throw new Error('HTTP '+r.status);return r.json();})
-    .then(res=>{if(res&&res.__error) throw new Error(res.__error);return res;});
+const GAS_TIMEOUT_MS=25000; // Apps Script can be slow on cold start; fail fast rather than hang forever
+async function gRunOnce(fn,args){
+  const controller=new AbortController();
+  const timer=setTimeout(()=>controller.abort(),GAS_TIMEOUT_MS);
+  try{
+    const r=await fetch(GAS_URL,{method:'POST',headers:{'Content-Type':'text/plain'},
+      body:JSON.stringify({fn,args}),signal:controller.signal});
+    if(!r.ok){
+      const err=new Error('HTTP '+r.status);err.status=r.status;throw err;
+    }
+    const res=await r.json();
+    if(res&&res.__error) throw new Error(res.__error);
+    return res;
+  }catch(e){
+    if(e.name==='AbortError') throw new Error('Request timed out — Apps Script is taking too long to respond.');
+    throw e;
+  }finally{
+    clearTimeout(timer);
+  }
+}
+async function gRun(fn,...args){
+  if(!GAS_URL) throw new Error('GAS_URL not set.');
+  const maxAttempts=3;
+  let lastErr;
+  for(let attempt=1;attempt<=maxAttempts;attempt++){
+    try{
+      return await gRunOnce(fn,args);
+    }catch(e){
+      lastErr=e;
+      // Retry transient failures (network blip, brief 404 right after a fresh
+      // deploy while it propagates, cold-start timeout) with a short backoff.
+      const retryable=e.status===404||e.status===503||/timed out/i.test(e.message);
+      if(attempt<maxAttempts&&retryable){
+        await new Promise(res=>setTimeout(res,900*attempt));
+        continue;
+      }
+      break;
+    }
+  }
+  if(lastErr&&lastErr.status===404){
+    throw new Error('HTTP 404 — the web app URL looks out of date. Check Deploy → Manage deployments in Apps Script and update GAS_URL.');
+  }
+  throw lastErr;
 }
 
 /* ── STATE ── */
